@@ -2498,11 +2498,17 @@ async function doRegister() {
   errEl.classList.remove('visible');
   succEl.classList.remove('visible');
 
+  let redirectUrl = window.location.origin;
+  if (redirectUrl.includes('-pricilla-s-projects.vercel.app')) {
+    redirectUrl = 'https://gabarita-two-rho.vercel.app';
+  }
+
   const { data, error } = await db.auth.signUp({
     email,
     password: pwd1,
     options: {
-      data: { nome: name }
+      data: { nome: name },
+      emailRedirectTo: redirectUrl
     }
   });
 
@@ -2520,7 +2526,16 @@ async function doRegister() {
 }
 
 async function doGoogleSignIn() {
-  const { error } = await db.auth.signInWithOAuth({ provider: 'google' });
+  let redirectUrl = window.location.origin;
+  if (redirectUrl.includes('-pricilla-s-projects.vercel.app')) {
+    redirectUrl = 'https://gabarita-two-rho.vercel.app';
+  }
+  const { error } = await db.auth.signInWithOAuth({ 
+    provider: 'google',
+    options: {
+      redirectTo: redirectUrl
+    }
+  });
   if (error) {
     alert('Erro ao iniciar login com Google: ' + error.message);
   }
