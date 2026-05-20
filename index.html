@@ -23,6 +23,7 @@
   --blue:      #3B82F6;
   --blue2:     #60a5fa;
   --blue3:     #2563eb;
+  --primary:   var(--blue);
   --gold:      #F4B942;
   --gold2:     #f9cc6e;
   --green:     #22c55e;
@@ -2009,6 +2010,10 @@ body {
             <div class="discipline-topbar-title" id="lesson-page-title">Tópico</div>
             <div class="discipline-topbar-sub" id="lesson-page-sub">Estude a teoria e anote suas dúvidas ao lado</div>
           </div>
+          <div class="lesson-nav-buttons" style="display: flex; gap: 8px;">
+            <button id="btn-prev-lesson" class="btn-back" onclick="prevLesson()">← Anterior</button>
+            <button id="btn-next-lesson" class="btn-back" onclick="nextLesson()">Próxima →</button>
+          </div>
         </div>
 
         <div class="lesson-layout">
@@ -2385,6 +2390,7 @@ let state = {
   currentPage: 'dashboard',
   currentDiscipline: null,
   currentTopic: null,
+  currentTopicIndex: null,
   // Exercise session
   exerciseQuestions: [],
   exerciseIndex: 0,
@@ -2967,6 +2973,19 @@ function backToDiscipline() {
   openDiscipline(state.currentDiscipline);
 }
 
+function prevLesson() {
+  if (state.currentTopicIndex !== null && state.currentTopicIndex > 0) {
+    openLesson(state.currentDiscipline, state.currentTopicIndex - 1);
+  }
+}
+
+function nextLesson() {
+  const disc = DISCIPLINES[state.currentDiscipline];
+  if (state.currentTopicIndex !== null && state.currentTopicIndex < disc.topicos.length - 1) {
+    openLesson(state.currentDiscipline, state.currentTopicIndex + 1);
+  }
+}
+
 async function openLesson(discId, topicIndex) {
   const disc = DISCIPLINES[discId];
   const topicoData = disc.topicos[topicIndex];
@@ -2980,8 +2999,34 @@ async function openLesson(discId, topicIndex) {
 
   state.currentDiscipline = discId;
   state.currentTopic = topicoId;
+  state.currentTopicIndex = topicIndex;
   state.currentPage = 'lesson';
   state.exerciseStarted = false;
+
+  // Update navigation buttons
+  const btnPrev = document.getElementById('btn-prev-lesson');
+  const btnNext = document.getElementById('btn-next-lesson');
+  if (btnPrev && btnNext) {
+    if (topicIndex > 0) {
+      btnPrev.disabled = false;
+      btnPrev.style.opacity = '1';
+      btnPrev.style.pointerEvents = 'auto';
+    } else {
+      btnPrev.disabled = true;
+      btnPrev.style.opacity = '0.4';
+      btnPrev.style.pointerEvents = 'none';
+    }
+
+    if (topicIndex < disc.topicos.length - 1) {
+      btnNext.disabled = false;
+      btnNext.style.opacity = '1';
+      btnNext.style.pointerEvents = 'auto';
+    } else {
+      btnNext.disabled = true;
+      btnNext.style.opacity = '0.4';
+      btnNext.style.pointerEvents = 'none';
+    }
+  }
 
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
