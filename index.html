@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gabarita — Plataforma de Estudos</title>
+
+<!-- Favicons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#1A1F2E">
+<meta name="msapplication-TileColor" content="#1A1F2E">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -2984,7 +2994,7 @@ const DISCIPLINES = {
       {
         id: 'Fonologia',
         titulo: 'Fonologia',
-        texto: '<h3>Aula em breve</h3><p>O conteúdo de texto para este tópico estará disponível em breve.</p>',
+        texto: '<h3>Fonologia: sons e letras do português</h3><p><strong>Fonologia</strong> é o estudo dos sons da língua. A prova da COTEC cobra principalmente <strong>divisão silábica</strong>, <strong>classificação quanto ao número de sílabas</strong> e <strong>acentuação</strong>.</p><h3>Divisão silábica — o que nunca separar</h3><ul><li><strong>Dígrafos</strong> (ch, lh, nh, rr, ss, sc, gu, qu) nunca se separam: <em>ca-chu-pa, pa-lha-ço</em></li><li><strong>Ditongos e tritongos</strong> ficam na mesma sílaba: <em>cai-xa, Pa-ra-guai</em></li><li><strong>Hiato</strong> separa: <em>sa-ú-de, po-e-ta</em></li></ul><h3>Classificação quanto ao número de sílabas</h3><ul><li><strong>Monossílaba:</strong> 1 sílaba — pá, sol, flor</li><li><strong>Dissílaba:</strong> 2 sílabas — ca-sa, li-vro</li><li><strong>Trissílaba:</strong> 3 sílabas — mé-di-co</li><li><strong>Polissílaba:</strong> 4 ou mais — es-tu-dan-te</li></ul><p><strong>Dica de ouro:</strong> Para dividir uma palavra, bata palma — cada "baque" é uma sílaba. E lembre: ditongo (duas vogais na mesma sílaba) ≠ hiato (cada vogal em sílaba separada).</p>',
         videoUrl: 'https://www.youtube.com/embed/YYrUT5KBgq0',
         sugeridos: [
           { titulo: 'Fonologia — Divisão Silábica', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/k0sM0Ovooo8/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=k0sM0Ovooo8' },
@@ -2994,7 +3004,7 @@ const DISCIPLINES = {
       {
         id: 'Ortografia',
         titulo: 'Ortografia',
-        texto: '<h3>Aula em breve</h3><p>O conteúdo de texto para este tópico estará disponível em breve.</p>',
+        texto: '<h3>Ortografia: escrever certo na prova</h3><p><strong>Ortografia</strong> é a escrita correta das palavras. A COTEC cobra principalmente as trocas de letras que todo mundo confunde. Foque nesses casos:</p><h3>S ou Z?</h3><ul><li>Substantivos femininos com <strong>-esa, -isa:</strong> <em>marquesa, poetisa</em></li><li>Verbos com <strong>-izar</strong> formados de adjetivos: <em>modernizar, suavizar</em></li><li>Depois de ditongo, use <strong>z:</strong> <em>riqueza, beleza</em></li></ul><h3>X ou CH?</h3><ul><li>Depois de <strong>en-</strong>, geralmente x: <em>enxada, enxame, enxugar</em></li><li>Depois de ditongo, geralmente x: <em>caixote, peixe, feixe</em></li></ul><h3>G ou J?</h3><ul><li><strong>-agem, -igem, -ugem</strong> levam g: <em>viagem, vertigem, ferrugem</em></li><li>Exceções com j: <em>pajem</em></li></ul><h3>Hífen (Acordo Ortográfico 2009)</h3><ul><li>Prefixo <strong>mal</strong> antes de h ou vogal: <em>mal-humorado, mal-estar</em></li><li>Prefixo <strong>bem</strong> antes de vogal ou h: <em>bem-estar, bem-humorado</em></li><li>Prefixo <strong>anti, super, extra</strong> antes de vogal igual ou h: <em>anti-inflamatório, super-homem</em></li></ul><p><strong>Dica de ouro:</strong> Duvide das palavras que você escreve "no automático". As mais fáceis são as que mais enganam.</p>',
         videoUrl: 'https://www.youtube.com/embed/yMzzVuPIt0Q',
         sugeridos: [
           { titulo: 'Ortografia — Acordo Ortográfico', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/qgR5kOpyIQc/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=qgR5kOpyIQc' },
@@ -3004,7 +3014,7 @@ const DISCIPLINES = {
       {
         id: 'Formação de palavras',
         titulo: 'Formação de palavras',
-        texto: '<h3>Aula em breve</h3><p>O conteúdo de texto para este tópico estará disponível em breve.</p>',
+        texto: '<h3>Como as palavras são formadas</h3><p>As palavras do português são formadas de partes chamadas <strong>morfemas</strong>. Conhecer os processos de formação ajuda a deduzir o significado de palavras novas — e cai muito na COTEC!</p><h3>Derivação — a partir de uma palavra que já existe</h3><ul><li><strong>Prefixação:</strong> adiciona prefixo antes — <em>des</em>fazer, <em>in</em>feliz, <em>re</em>fazer</li><li><strong>Sufixação:</strong> adiciona sufixo depois — feliz<em>mente</em>, pedreir<em>o</em>, cidad<em>ão</em></li><li><strong>Parassíntese:</strong> prefixo E sufixo ao mesmo tempo — <em>en</em>riquecer (nenhuma das partes existe sozinha)</li><li><strong>Regressiva:</strong> retira parte da palavra — chorar → choro, ajudar → ajuda</li></ul><h3>Composição — juntar duas palavras</h3><ul><li><strong>Justaposição:</strong> sem alteração — <em>guarda-chuva, passatempo</em></li><li><strong>Aglutinação:</strong> com fusão de fonemas — <em>aguardente (água + ardente), planalto (plano + alto)</em></li></ul><h3>Estrutura das palavras</h3><ul><li><strong>Radical:</strong> parte que carrega o significado — <em>cas</em>a, <em>cas</em>inha, <em>cas</em>arão</li><li><strong>Prefixo:</strong> vem antes do radical | <strong>Sufixo:</strong> vem depois</li></ul><p><strong>Dica de ouro:</strong> Se aparecer uma palavra estranha na questão, identifique o prefixo ou sufixo — eles entregam o significado.</p>',
         videoUrl: 'https://www.youtube.com/embed/U_nRXQh5L40',
         sugeridos: [
           { titulo: 'Estrutura e Formação de Palavras', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/Gjv44CgF68Y/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=Gjv44CgF68Y' },
@@ -3014,7 +3024,7 @@ const DISCIPLINES = {
       {
         id: 'Pontuação',
         titulo: 'Pontuação',
-        texto: '<h3>Aula em breve</h3><p>O conteúdo de texto para este tópico estará disponível em breve.</p>',
+        texto: '<h3>Pontuação: o ritmo da frase</h3><p>A pontuação organiza as ideias e dá sentido ao texto. A COTEC cobra principalmente o uso da <strong>vírgula</strong> — o sinal que mais gera dúvida.</p><h3>Quando usar a vírgula ✅</h3><ul><li>Separar itens de uma lista: <em>Comprei pão, leite, queijo e manteiga.</em></li><li>Isolar expressão explicativa: <em>Maria, minha vizinha, ganhou o concurso.</em></li><li>Antes de conjunções adversativas (mas, porém, contudo): <em>Estudou bastante, mas ficou nervosa.</em></li><li>Isolar adjunto adverbial deslocado: <em>Na segunda-feira, ela foi à prefeitura.</em></li><li>Isolar vocativo: <em>Senhor diretor, por favor atenda nossa solicitação.</em></li></ul><h3>Quando NÃO usar a vírgula ❌</h3><ul><li>Entre sujeito e verbo: ❌ <em>A candidata, passou na prova.</em></li><li>Entre verbo e objeto: ❌ <em>Ela entregou, os documentos.</em></li><li>Antes de "e" simples que une dois predicados do mesmo sujeito.</li></ul><h3>Outros sinais importantes</h3><ul><li><strong>Ponto e vírgula (;):</strong> separa itens longos ou orações paralelas já com vírgulas.</li><li><strong>Dois-pontos (:):</strong> introduz enumeração, explicação ou citação.</li><li><strong>Travessão (—):</strong> fala de personagem ou destaque com ênfase.</li></ul><p><strong>Dica de ouro:</strong> Se retirar a vírgula e o sentido mudar, ela era essencial. Leia em voz alta para perceber.</p>',
         videoUrl: 'https://www.youtube.com/embed/ODkVN0kRciE',
         sugeridos: [
           { titulo: 'Sinais de Pontuação para Concursos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/G8Stjzy-87k/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=G8Stjzy-87k' },
@@ -3024,7 +3034,7 @@ const DISCIPLINES = {
       {
         id: 'Classes de palavras',
         titulo: 'Classes de palavras',
-        texto: '<h3>Aula em breve</h3><p>O conteúdo de texto para este tópico estará disponível em breve.</p>',
+        texto: '<h3>As 10 classes de palavras</h3><p>Toda palavra pertence a uma <strong>classe gramatical</strong>. A COTEC cobra principalmente a identificação e a função de cada classe na frase.</p><h3>Classes variáveis (mudam de forma)</h3><ul><li><strong>Substantivo:</strong> nomeia seres, coisas, sentimentos — <em>cidade, felicidade, Pedro</em></li><li><strong>Adjetivo:</strong> caracteriza o substantivo — <em>dia ensolarado, cidade bonita</em></li><li><strong>Artigo:</strong> acompanha o substantivo — <em>o, a, os, as, um, uma</em></li><li><strong>Pronome:</strong> substitui ou acompanha o substantivo — <em>eu, ele, meu, este, quem</em></li><li><strong>Verbo:</strong> indica ação, estado ou fenômeno — <em>correr, ser, chover</em></li><li><strong>Numeral:</strong> indica quantidade ou ordem — <em>dois, segundo, dobro</em></li></ul><h3>Classes invariáveis (não mudam de forma)</h3><ul><li><strong>Advérbio:</strong> modifica verbo, adjetivo ou outro advérbio — <em>rapidamente, muito, não</em></li><li><strong>Preposição:</strong> liga palavras — <em>de, em, para, com, por, sobre</em></li><li><strong>Conjunção:</strong> liga orações — <em>e, mas, porque, quando, embora</em></li><li><strong>Interjeição:</strong> exprime emoção — <em>Ufa! Oba! Ai!</em></li></ul><p><strong>Dica de ouro:</strong> Para identificar a classe, observe a <em>função da palavra na frase</em>. "Alto" pode ser adjetivo (<em>prédio alto</em>) ou advérbio (<em>fala alto</em>).</p>',
         videoUrl: 'https://www.youtube.com/embed/s8a6eXncWY8',
         sugeridos: [
           { titulo: 'Classes de Palavras — Substantivo e Adjetivo', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/8MWNzazS40E/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=8MWNzazS40E' },
@@ -3034,20 +3044,83 @@ const DISCIPLINES = {
       {
         id: 'Conjugação verbal',
         titulo: 'Conjugação verbal',
-        texto: '<h3>Aula em breve</h3><p>O conteúdo de texto para este tópico estará disponível em breve.</p>',
+        texto: '<h3>Conjugação verbal: tempo, modo e pessoa</h3><p>Conjugar um verbo é adaptá-lo para indicar <strong>quem age, quando age e como age</strong>. A COTEC cobra o uso correto dos tempos verbais e os verbos irregulares.</p><h3>Os três modos verbais</h3><ul><li><strong>Indicativo:</strong> fato certo — <em>Eu trabalho. Ela trabalhou. Nós trabalharemos.</em></li><li><strong>Subjuntivo:</strong> fato incerto ou desejado — <em>Espero que ela trabalhe. Se eu trabalhasse...</em></li><li><strong>Imperativo:</strong> ordem ou pedido — <em>Trabalhe! Faça isso agora!</em></li></ul><h3>Tempos que mais caem na prova</h3><ul><li><strong>Pretérito perfeito:</strong> ação acabada — <em>fiz, fui, vim, pus, puseram</em></li><li><strong>Pretérito imperfeito:</strong> ação contínua no passado — <em>fazia, ia, vinha</em></li><li><strong>Futuro do subjuntivo:</strong> condição futura — <em>quando eu chegar, se eu fizer</em></li></ul><h3>Verbos irregulares mais cobrados</h3><ul><li><strong>Ter:</strong> tenho, tem, <strong>têm</strong> (plural)</li><li><strong>Vir:</strong> venho, vem, <strong>vêm</strong> (plural)</li><li><strong>Pôr:</strong> ponho, põe, <strong>puseram</strong> (perf.)</li><li><strong>Ver:</strong> futuro do subj. = <em>vir</em> (se eu <em>vir</em> você)</li></ul><p><strong>Dica de ouro:</strong> "Eles <strong>têm</strong>" (acento) ≠ "ele <strong>tem</strong>" (sem acento). Mesma regra para "vêm" × "vem".</p>',
         videoUrl: 'https://www.youtube.com/embed/SSWbcOQS9hc',
         sugeridos: [
           { titulo: 'Conjugação Verbal — Tempos e Modos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/_G8y60xyXpU/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=_G8y60xyXpU' },
           { titulo: 'Verbos Regulares e Irregulares', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/PsGnw46lSKc/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=PsGnw46lSKc' }
         ]
       },
-      'Concordância',
-      'Regência',
-      'Colocação pronominal',
-      'Crase',
-      'Figuras de linguagem',
-      'Funções da linguagem',
-      'Variações linguísticas',
+      {
+        id: 'Concordância',
+        titulo: 'Concordância',
+        texto: '<h3>Concordância: verbo e sujeito em harmonia</h3><p><strong>Concordância verbal</strong> é fazer o verbo combinar com o sujeito. <strong>Concordância nominal</strong> é fazer o adjetivo combinar com o substantivo.</p><h3>Concordância Verbal — regras principais</h3><ul><li><strong>Sujeito composto antes do verbo:</strong> verbo no plural — <em>Pedro e Ana <strong>chegaram</strong> cedo.</em></li><li><strong>Sujeito composto depois do verbo:</strong> pode concordar com o mais próximo — <em><strong>Chegou</strong> Pedro e Ana.</em></li><li><strong>"A gente"</strong> pede verbo na 3ª pessoa do singular — <em>A gente <strong>foi</strong>.</em></li><li><strong>Sujeito coletivo:</strong> verbo no singular — <em>A multidão <strong>gritou</strong>.</em></li></ul><h3>Pegadinhas da COTEC</h3><ul><li><em>"Fazem"</em> dois anos ❌ → <em>"Faz"</em> dois anos ✅ (verbo impessoal)</li><li><em>"Houveram"</em> problemas ❌ → <em>"Houve"</em> problemas ✅ (haver = impessoal)</li><li><em>"Vendem-se"</em> apartamentos ✅ (pronome apassivador: verbo concorda com sujeito plural)</li></ul><h3>Concordância Nominal</h3><ul><li>Adjetivo após dois substantivos (m + f): masculino plural — <em>Pai e mãe <strong>orgulhosos</strong>.</em></li><li>"Meio" como advérbio é invariável: <em>ela ficou meio nervosa.</em></li></ul><p><strong>Dica de ouro:</strong> Identifique o sujeito antes de conjugar o verbo. Sujeito oculto? Procure na frase anterior.</p>',
+        videoUrl: 'https://www.youtube.com/embed/SSWbcOQS9hc',
+        sugeridos: [
+          { titulo: 'Concordância Verbal para Concursos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/2x9GC9CxOBk/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=2x9GC9CxOBk' },
+          { titulo: 'Concordância Nominal — Casos Especiais', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/ZFNvS1EKRGI/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=ZFNvS1EKRGI' }
+        ]
+      },
+      {
+        id: 'Regência',
+        titulo: 'Regência',
+        texto: '<h3>Regência: o verbo "pede" preposição?</h3><p><strong>Regência verbal</strong> é saber quais preposições cada verbo exige. É um dos tópicos que mais gera erros — e por isso cai bastante na COTEC.</p><h3>Verbos mais cobrados e suas preposições</h3><ul><li><strong>Assistir</strong> (ver) → exige <em>a</em>: <em>Assisti <strong>ao</strong> jogo.</em></li><li><strong>Visar</strong> (objetivo) → exige <em>a</em>: <em>O projeto visa <strong>à</strong> melhoria.</em></li><li><strong>Obedecer</strong> → exige <em>a</em>: <em>Obedeceu <strong>às</strong> normas.</em></li><li><strong>Preferir</strong> → exige <em>a</em> (nunca "do que"): <em>Prefiro café <strong>a</strong> chá.</em></li><li><strong>Implicar</strong> (acarretar) → sem preposição: <em>Isso implica mudanças.</em></li><li><strong>Esquecer</strong> → direto; <strong>Esquecer-se</strong> → de: <em>Esqueceu-se <strong>do</strong> compromisso.</em></li></ul><h3>Regência nominal — exemplos frequentes</h3><ul><li><strong>Apto a:</strong> <em>apto <strong>a</strong> trabalhar</em></li><li><strong>Compatível com:</strong> <em>compatível <strong>com</strong> o cargo</em></li><li><strong>Necessário a/para:</strong> <em>necessário <strong>ao</strong> projeto</em></li></ul><p><strong>Dica de ouro:</strong> "Assistir <em>a</em> um filme" (ver) ≠ "O médico assistiu o paciente" (atender — sem preposição). Dois sentidos, duas regências!</p>',
+        videoUrl: 'https://www.youtube.com/embed/ODkVN0kRciE',
+        sugeridos: [
+          { titulo: 'Regência Verbal para Concursos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/tHY7XHFW9Jk/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=tHY7XHFW9Jk' },
+          { titulo: 'Regência Nominal — Casos Mais Cobrados', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/L6z3Xa5l5Hs/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=L6z3Xa5l5Hs' }
+        ]
+      },
+      {
+        id: 'Colocação pronominal',
+        titulo: 'Colocação pronominal',
+        texto: '<h3>Colocação pronominal: onde fica o pronome?</h3><p><strong>Colocação pronominal</strong> é a posição dos pronomes oblíquos átonos (me, te, se, o, a, lhe, nos) em relação ao verbo. Há três posições possíveis.</p><h3>As três posições</h3><ul><li><strong>Próclise</strong> — pronome ANTES do verbo. Use quando há palavra atrativa:<ul><li>Negação: <em>Não <strong>me</strong> diga.</em></li><li>Advérbio: <em>Sempre <strong>se</strong> esforçou.</em></li><li>Conjunção: <em>Quando <strong>me</strong> ligou...</em></li><li>Pronome relativo/indefinido: <em>Quem <strong>te</strong> disse isso?</em></li></ul></li><li><strong>Ênclise</strong> — pronome DEPOIS do verbo (com hífen). Padrão sem palavra atrativa:<em> Diga-<strong>me</strong>. Ele contou-<strong>lhe</strong> tudo.</em></li><li><strong>Mesóclise</strong> — pronome NO MEIO do verbo. Só com futuro do presente e futuro do pretérito, sem palavra atrativa:<em> Dir-<strong>te</strong>-ei a verdade.</em></li></ul><h3>O que a COTEC mais cobra</h3><ul><li>❌ Não se inicia frase com pronome oblíquo na escrita formal: ❌ <em>Me diga a verdade.</em> → ✅ <em>Diga-me a verdade.</em></li><li>"Nunca", "sempre", "já" e "não" são palavras atrativas → exigem próclise.</li></ul><p><strong>Dica de ouro:</strong> Se tiver negação ou advérbio antes do verbo, o pronome vai ANTES. Sem essas palavras, vai DEPOIS.</p>',
+        videoUrl: 'https://www.youtube.com/embed/s8a6eXncWY8',
+        sugeridos: [
+          { titulo: 'Colocação Pronominal para Concursos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/0cFplPeHYEw/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=0cFplPeHYEw' },
+          { titulo: 'Próclise, Mesóclise e Ênclise — Explicação Simples', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/kBfF1Vg7gSE/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=kBfF1Vg7gSE' }
+        ]
+      },
+      {
+        id: 'Crase',
+        titulo: 'Crase',
+        texto: '<h3>Crase: quando usar o acento grave (à)</h3><p><strong>Crase</strong> é a fusão da preposição <em>a</em> com o artigo feminino <em>a(s)</em>. Representada pelo acento grave: <strong>à</strong>. Só ocorre diante de palavras femininas que aceitam artigo.</p><h3>Quando tem crase ✅</h3><ul><li>Diante de substantivo feminino: <em>Fui <strong>à</strong> cidade. Entreguei <strong>às</strong> funcionárias.</em></li><li>Locuções femininas fixas: <em>à tarde, às vezes, à medida que, às pressas</em></li><li>Antes de pronome demonstrativo feminino: <em>àquela, àquelas, àquilo</em></li><li>Antes de "senhora": <em>Dirijo-me <strong>à</strong> senhora.</em></li></ul><h3>Quando NÃO tem crase ❌</h3><ul><li>Antes de palavra masculina: <em>Fui <strong>a</strong> pé. A <strong>a</strong> tempo.</em></li><li>Antes de verbo: <em>Ele se recusou <strong>a</strong> assinar.</em></li><li>Antes de pronomes pessoais: <em>Entreguei <strong>a</strong> ela.</em></li><li>Antes de nomes de cidade sem artigo: <em>Fui <strong>a</strong> Paris.</em></li></ul><h3>O teste rápido</h3><p>Troque a palavra feminina por masculina equivalente. Se aparecer "ao", tem crase. <em>Fui <strong>ao</strong> mercado → Fui <strong>à</strong> feira.</em></p><p><strong>Dica de ouro:</strong> Nunca há crase antes de substantivo masculino, verbo ou pronome pessoal.</p>',
+        videoUrl: 'https://www.youtube.com/embed/YYrUT5KBgq0',
+        sugeridos: [
+          { titulo: 'Crase para Concursos — Regras e Exceções', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/NalCB0GEsUQ/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=NalCB0GEsUQ' },
+          { titulo: 'Crase: Quando Usar e Quando Não Usar', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/yQcuqb3Ojzk/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=yQcuqb3Ojzk' }
+        ]
+      },
+      {
+        id: 'Figuras de linguagem',
+        titulo: 'Figuras de linguagem',
+        texto: '<h3>Figuras de linguagem: o português sendo criativo</h3><p><strong>Figuras de linguagem</strong> são recursos expressivos que tornam o texto mais vivo. A COTEC pede principalmente que você <em>identifique e nomeie</em> a figura presente em um trecho.</p><h3>As mais cobradas</h3><ul><li><strong>Metáfora:</strong> comparação sem "como" — <em>"A vida é uma viagem."</em></li><li><strong>Comparação (Símile):</strong> comparação com "como" — <em>"Ele é forte como um touro."</em></li><li><strong>Metonímia:</strong> troca uma palavra por outra relacionada — <em>"Leu Machado de Assis." (= as obras)</em></li><li><strong>Hipérbole:</strong> exagero intencional — <em>"Já te disse um milhão de vezes."</em></li><li><strong>Ironia:</strong> diz o contrário do que pensa — <em>"Que serviço excelente!" (após 2h de espera)</em></li><li><strong>Eufemismo:</strong> suaviza algo desagradável — <em>"Ele passou para melhor."</em></li><li><strong>Antítese:</strong> ideias opostas — <em>"O rico mais rico; o pobre, mais pobre."</em></li><li><strong>Personificação:</strong> atribui ações humanas a inanimados — <em>"O vento sussurrava segredos."</em></li><li><strong>Gradação:</strong> sequência crescente ou decrescente — <em>"Entrei, vi, venci."</em></li></ul><p><strong>Dica de ouro:</strong> Metáfora × Comparação — se tem "como", é comparação. Se não tem, é metáfora.</p>',
+        videoUrl: 'https://www.youtube.com/embed/U_nRXQh5L40',
+        sugeridos: [
+          { titulo: 'Figuras de Linguagem para Concursos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/ZEWrTg9GQFE/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=ZEWrTg9GQFE' },
+          { titulo: 'Metáfora, Metonímia e Figuras mais Cobradas', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/x8jK3YF8JxA/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=x8jK3YF8JxA' }
+        ]
+      },
+      {
+        id: 'Funções da linguagem',
+        titulo: 'Funções da linguagem',
+        texto: '<h3>Funções da linguagem: para que serve o texto?</h3><p>Toda comunicação tem uma <strong>intenção</strong>. As funções da linguagem identificam qual é o foco principal: quem fala, o quê, para quem, como ou sobre o quê.</p><h3>As 6 funções — com exemplos práticos</h3><ul><li><strong>Referencial:</strong> foco na informação objetiva. <em>"A sessão ocorrerá às 14h no auditório."</em></li><li><strong>Emotiva:</strong> foco no emissor e seus sentimentos. <em>"Que saudade! Não acredito que acabou!"</em></li><li><strong>Conativa (Apelativa):</strong> foco no receptor, persuadir ou ordenar. <em>"Vote em mim! Ligue agora!"</em></li><li><strong>Fática:</strong> foco no canal, verificar se a comunicação funciona. <em>"Alô? Está me ouvindo?"</em></li><li><strong>Metalinguística:</strong> foco no próprio código. <em>"\'Saudade\' é uma palavra portuguesa."</em></li><li><strong>Poética:</strong> foco na forma estética da mensagem. <em>Textos literários, slogan criativo, letras de música.</em></li></ul><p><strong>Dica de ouro:</strong> Um texto pode ter mais de uma função — mas sempre há uma <em>predominante</em>. A questão pede a que se destaca.</p>',
+        videoUrl: 'https://www.youtube.com/embed/ibwf_X3498c',
+        sugeridos: [
+          { titulo: 'Funções da Linguagem para Concursos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/h0CKy8IFxh4/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=h0CKy8IFxh4' },
+          { titulo: 'As 6 Funções da Linguagem — Jakobson', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/22iA3PPjr7c/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=22iA3PPjr7c' }
+        ]
+      },
+      {
+        id: 'Variações linguísticas',
+        titulo: 'Variações linguísticas',
+        texto: '<h3>Variações linguísticas: o português tem sotaque e estilo</h3><p>A língua não é igual em todo lugar nem em toda situação. <strong>Variação linguística</strong> é a mudança natural na língua conforme a região, o grupo social, a época ou o contexto.</p><h3>Tipos de variação</h3><ul><li><strong>Geográfica (Diatópica):</strong> diferenças entre regiões.<em> "moleque" (SP) = "guri" (RS) = "menino" (BA)</em></li><li><strong>Social (Diastrática):</strong> diferenças entre grupos sociais, profissões, faixas etárias.<em> Gírias dos jovens, jargão médico, linguagem jurídica.</em></li><li><strong>Histórica (Diacrônica):</strong> mudanças ao longo do tempo.<em> "vossa mercê" → "você"; palavras em desuso.</em></li><li><strong>De registro (Diafásica):</strong> formal x informal conforme o contexto.<em> "O senhor poderia assinar aqui?" vs. "Assina aqui!"</em></li></ul><h3>Norma culta x variedades populares</h3><p>A <strong>norma culta</strong> é a variedade de prestígio usada em textos formais e concursos. As <strong>variedades populares</strong> não são "erradas" — são diferentes. A prova cobra a norma culta, mas pode pedir que você identifique o tipo de variação.</p><p><strong>Dica de ouro:</strong> Nenhuma variação é superior à outra. O que muda é o <em>contexto de uso</em>. Na prova: norma culta sempre.</p>',
+        videoUrl: 'https://www.youtube.com/embed/ZCfk-3UYsf8',
+        sugeridos: [
+          { titulo: 'Variação Linguística para Concursos', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/RbXy5I0DrKc/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=RbXy5I0DrKc' },
+          { titulo: 'Tipos de Variação Linguística — Diatópica, Diastrática', canal: 'YouTube', thumb: 'https://img.youtube.com/vi/LXcc-JK3l2E/mqdefault.jpg', link: 'https://www.youtube.com/watch?v=LXcc-JK3l2E' }
+        ]
+      },
     ],
   },
   'matematica': {
@@ -3455,10 +3528,7 @@ async function loadAll() {
       .select('*')
       .eq('id', state.userId)
       .single();
-    if (freshProfile) {
-      console.log('[loadAll] avatar_url do banco:', freshProfile.avatar_url);
-      state.profile = freshProfile;
-    }
+    if (freshProfile) state.profile = freshProfile;
 
     return true;
   } catch (e) {
@@ -4419,15 +4489,13 @@ async function handleAvatarUpload(input) {
 
   const { data } = db.storage.from('avatars').getPublicUrl(path);
   const publicUrl = data.publicUrl;
-  console.log('[avatar] publicUrl gerada:', publicUrl);
 
-  const { data: updateData, error: dbErr } = await db.from('profiles').update({ avatar_url: publicUrl }).eq('id', userId).select('avatar_url').single();
+  const { error: dbErr } = await db.from('profiles').update({ avatar_url: publicUrl }).eq('id', userId);
   if (dbErr) {
-    console.error('[avatar] Erro ao salvar no banco:', dbErr);
+    console.error('Erro ao salvar avatar no perfil:', dbErr);
     alert('Foto enviada, mas não foi possível salvar no perfil: ' + (dbErr.message || JSON.stringify(dbErr)));
     return;
   }
-  console.log('[avatar] Salvo no banco:', updateData?.avatar_url);
 
   state.profile = { ...state.profile, avatar_url: publicUrl };
   renderProfileAvatar();

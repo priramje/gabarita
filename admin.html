@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabarita — Painel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #1A1F2E;
+  --bg2:     #1f2537;
+  --bg3:     #242b3d;
+  --card:    #1e2434;
+  --border:  #2a3349;
+  --border2: #354265;
+  --blue:    #3B82F6;
+  --blue2:   #60a5fa;
+  --green:   #22c55e;
+  --red:     #ef4444;
+  --yellow:  #F4B942;
+  --text:    #E8EDF2;
+  --text2:   #94a3b8;
+  --text3:   #64748b;
+  --nav-w:   220px;
+}
+
+html { font-size: 14px; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── LOGIN ── */
+#login-screen {
+  display: none;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+#login-screen.active { display: flex; }
+.login-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 360px;
+}
+.login-box h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.login-box p  { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+
+/* ── FORM ELEMENTS ── */
+label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
+input, select, textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color .15s;
+  margin-bottom: 16px;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--blue); }
+textarea { resize: vertical; min-height: 120px; }
+select { cursor: pointer; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  transition: opacity .15s, transform .1s;
+}
+.btn:hover  { opacity: .85; }
+.btn:active { transform: scale(.97); }
+.btn-primary  { background: var(--blue);  color: #fff; }
+.btn-success  { background: var(--green); color: #fff; }
+.btn-danger   { background: var(--red);   color: #fff; }
+.btn-ghost    { background: transparent;  color: var(--text2); border: 1px solid var(--border); }
+.btn-sm { padding: 6px 10px; font-size: 12px; border-radius: 6px; }
+.btn-full { width: 100%; justify-content: center; }
+
+.err { color: var(--red); font-size: 12px; margin-top: -10px; margin-bottom: 12px; display: none; }
+.err.show { display: block; }
+
+/* ── APP SHELL ── */
+#app { display: none; flex: 1; flex-direction: column; }
+#app.active { display: flex; }
+
+header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-brand { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.header-brand span { color: var(--blue); }
+.header-user { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text2); }
+
+.app-body { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR NAV ── */
+nav {
+  width: var(--nav-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 16px 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all .15s;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--bg3); color: var(--blue2); border-left-color: var(--blue); }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+/* ── MAIN CONTENT ── */
+main { flex: 1; overflow-y: auto; padding: 28px 32px; }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.page-sub   { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+
+/* ── CARDS / SECTIONS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-head h3 { font-size: 15px; font-weight: 700; }
+
+/* ── TOPIC LIST ── */
+.disc-group { margin-bottom: 24px; }
+.disc-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+.topic-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: border-color .15s;
+}
+.topic-row:hover { border-color: var(--border2); }
+.topic-order-btns { display: flex; flex-direction: column; gap: 2px; }
+.order-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 10px;
+  line-height: 1;
+  padding: 1px 4px;
+  border-radius: 3px;
+  transition: color .1s;
+}
+.order-btn:hover { color: var(--text); background: var(--border2); }
+.topic-name { flex: 1; font-size: 13px; font-weight: 500; }
+.topic-actions { display: flex; gap: 6px; align-items: center; }
+.toggle-active {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--border2);
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.toggle-active.on { background: var(--green); }
+.toggle-active::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .2s;
+}
+.toggle-active.on::after { transform: translateX(16px); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 28px;
+  width: 480px;
+  max-width: 96vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal h2 { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
+.modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+
+/* ── CONTENT EDITOR ── */
+.editor-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+.tool-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  transition: all .1s;
+}
+.tool-btn:hover { background: var(--border2); color: var(--text); }
+.editable-area {
+  min-height: 200px;
+  padding: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  outline: none;
+  margin-bottom: 16px;
+}
+.editable-area:focus { border-color: var(--blue); }
+.editable-area h3 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; color: var(--blue2); }
+.editable-area ul { padding-left: 20px; margin: 6px 0; }
+.editable-area li { margin-bottom: 4px; }
+.editable-area strong { color: var(--text); }
+
+/* ── VIDEO CARD ── */
+.video-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.video-thumb {
+  width: 80px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: var(--border2);
+}
+.video-info { flex: 1; min-width: 0; }
+.video-info .v-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.video-info .v-canal { font-size: 11px; color: var(--text3); }
+
+/* ── ANNOUNCEMENT CARD ── */
+.ann-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.ann-tipo-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  flex-shrink: 0;
+}
+.tipo-info    { background: rgba(59,130,246,.2); color: var(--blue2); }
+.tipo-aviso   { background: rgba(244,185,66,.2); color: var(--yellow); }
+.tipo-urgente { background: rgba(239,68,68,.2);  color: var(--red); }
+.ann-body { flex: 1; }
+.ann-titulo { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.ann-corpo  { font-size: 12px; color: var(--text2); }
+.ann-meta   { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* ── QUESTION LIST ── */
+.question-row {
+  padding: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.question-row:hover { border-color: var(--border2); }
+.q-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.q-disc  { font-size: 11px; color: var(--text3); }
+.q-nivel { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+.nivel-facil  { background: rgba(34,197,94,.15);  color: var(--green); }
+.nivel-medio  { background: rgba(244,185,66,.15); color: var(--yellow); }
+.nivel-dificil{ background: rgba(239,68,68,.15);  color: var(--red); }
+.q-enunciado  { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+/* ── FILTERS ── */
+.filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-row select { margin-bottom: 0; width: auto; min-width: 160px; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: transform .3s ease;
+  z-index: 999;
+  pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+#toast.success { border-color: var(--green); color: var(--green); }
+#toast.error   { border-color: var(--red);   color: var(--red);   }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 48px 0; color: var(--text3); }
+.empty-icon { font-size: 36px; margin-bottom: 10px; }
+.empty p    { font-size: 13px; }
+
+/* ── LOADING ── */
+.loading-bar {
+  height: 3px;
+  background: var(--blue);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  transition: width .3s;
+  z-index: 9999;
+}
+.loading-bar.go { width: 70%; }
+.loading-bar.done { width: 100%; opacity: 0; transition: width .2s, opacity .3s .2s; }
+</style>
+</head>
+<body>
+
+<div class="loading-bar" id="loading-bar"></div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="active">
+  <div class="login-box">
+    <h1>🎓 Gabarita Admin</h1>
+    <p>Acesso restrito a administradores</p>
+    <label>E-mail</label>
+    <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+    <label>Senha</label>
+    <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    <p class="err" id="login-err"></p>
+    <button class="btn btn-primary btn-full" id="btn-login">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="header-brand">🎓 Gabarita <span>Admin</span></div>
+    <div class="header-user">
+      <span id="header-name"></span>
+      <button class="btn btn-ghost btn-sm" id="btn-logout">Sair</button>
+    </div>
+  </header>
+  <div class="app-body">
+    <nav>
+      <div class="nav-item active" data-tab="aulas">
+        <span class="nav-icon">📚</span> Aulas
+      </div>
+      <div class="nav-item" data-tab="conteudo">
+        <span class="nav-icon">📝</span> Conteúdo
+      </div>
+      <div class="nav-item" data-tab="videos">
+        <span class="nav-icon">🎬</span> Vídeos
+      </div>
+      <div class="nav-item" data-tab="avisos">
+        <span class="nav-icon">📢</span> Avisos
+      </div>
+      <div class="nav-item" data-tab="questoes">
+        <span class="nav-icon">❓</span> Questões
+      </div>
+    </nav>
+    <main>
+
+      <!-- ===== ABA: AULAS ===== -->
+      <div class="tab-panel active" id="tab-aulas">
+        <div class="page-title">Aulas e Tópicos</div>
+        <div class="page-sub">Gerencie as disciplinas e a ordem dos tópicos exibidos para os alunos.</div>
+        <div style="margin-bottom:16px;">
+          <button class="btn btn-primary" id="btn-novo-topico">+ Novo tópico</button>
+        </div>
+        <div id="topics-list">
+          <div class="empty"><div class="empty-icon">⏳</div><p>Carregando...</p></div>
+        </div>
+      </div>
+
+      <!-- ===== ABA: CONTEÚDO ===== -->
+      <div class="tab-panel" id="tab-conteudo">
+        <div class="page-title">Conteúdo das Aulas</div>
+        <div class="page-sub">Edite o texto e o vídeo principal de cada tópico.</div>
+        <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:160px;">
+            <label>Disciplina</label>
+            <select id="cont-disc" style="margin-bottom:0">
+              <option value="">Selecione...</option>
+              <option value="lingua-portuguesa">Língua Portuguesa</option>
+              <option value="matematica">Matemática</option>
+              <option value="nocoes-informatica">Noções de Informática</option>
+            </select>
+          </div>
+          <div style="flex:1; min-width:160px;">
+            <label>Tópico</label>
+            <select id="cont-topico" style="margin-bottom:0" disabled>
+              <option value="">Selecione a disciplina...</option>
+            </select>
+          </div>
+        </div>
+        <div id="cont-editor" style="display:none;">
+          <label>Vídeo principal (URL do YouTube)</label>
+          <div style="display:flex; gap:8px; align-items:flex-start;">
+            <input id="cont-video-url" placeholder="https://www.youtube.com/watch?v=..." style="margin-bottom:0; flex:1">
+            <button class="btn btn-ghost btn-sm" id="btn-extrair-video" style="margin-top:0; white-space:nowrap">Extrair ID</button>
+          </div>
+          <div id="cont-video-preview" style="margin-bottom:16px; font-size:12px; color:var(--text3);"></div>
+
+          <label>Texto da aula</label>
+          <div class="editor-toolbar">
+            <button class="tool-btn" data-cmd="bold"><b>B</b></button>
+            <button class="tool-btn" data-cmd="italic"><i>I</i></button>
+            <button class="tool-btn" data-cmd="insertUnorderedList">• Lista</button>
+            <button class="tool-btn" data-cmd="h3">H3</button>
+            <button class="tool-btn" data-cmd="removeFormat">Limpar</button>
+          </div>
+          <div class="editable-area" id="cont-texto" contenteditable="true"></div>
+
+          <div style="display:flex; gap:10px; margin-top:4px;">
+            <button class="btn btn-primary" id="btn-salvar-conteudo">Salvar conteúdo</button>
+            <button class="btn btn-ghost" id="btn-preview-conteudo">Pré-visualizar</button>
+          </div>
+        </div>
+        <div id="cont-placeholder" class="empty" style="margin-top:40px;">
+          <div class="empty-icon">📝</div>
+          <p>Selecione uma disciplina e um tópico para editar</p>
+        </div>
+      </div>
+
+      <!-- ===== ABA: VÍDEOS ===== -->
+      <div class="tab-panel" id="tab-videos">
+        <div class="page-title">Vídeos Sugeridos</div>
+        <div class="page-sub">Adicione vídeos de apoio exibidos ao lado da aula.</div>
+        <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:160px;">
+            <label>Disciplina</label>
+            <select id="vid-disc" style="margin-bottom:0">
+              <option value="">Selecione...</option>
+              <option value="lingua-portuguesa">Língua Portuguesa</option>
+              <option value="matematica">Matemática</option>
+              <option value="nocoes-informatica">Noções de Informática</option>
+            </select>
+          </div>
+          <div style="flex:1; min-width:160px;">
+            <label>Tópico</label>
+            <select id="vid-topico" style="margin-bottom:0" disabled>
+              <option value="">Selecione a disciplina...</option>
+            </select>
+          </div>
+        </div>
+        <div id="vid-section" style="display:none;">
+          <div style="margin-bottom:12px;">
+            <button class="btn btn-primary" id="btn-novo-video">+ Adicionar vídeo</button>
+          </div>
+          <div id="videos-list"></div>
+        </div>
+        <div id="vid-placeholder" class="empty">
+          <div class="empty-icon">🎬</div>
+          <p>Selecione um tópico para gerenciar os vídeos</p>
+        </div>
+      </div>
+
+      <!-- ===== ABA: AVISOS ===== -->
+      <div class="tab-panel" id="tab-avisos">
+        <div class="page-title">Avisos</div>
+        <div class="page-sub">Comunique novidades, alertas e informações para todos os alunos.</div>
+        <div style="margin-bottom:16px;">
+          <button class="btn btn-primary" id="btn-novo-aviso">+ Novo aviso</button>
+        </div>
+        <div id="announcements-list">
+          <div class="empty"><div class="empty-icon">⏳</div><p>Carregando...</p></div>
+        </div>
+      </div>
+
+      <!-- ===== ABA: QUESTÕES ===== -->
+      <div class="tab-panel" id="tab-questoes">
+        <div class="page-title">Questões</div>
+        <div class="page-sub">Crie, edite e gerencie o banco de questões.</div>
+        <div class="filter-row">
+          <select id="q-filter-disc">
+            <option value="">Todas as disciplinas</option>
+            <option value="lingua-portuguesa">Língua Portuguesa</option>
+            <option value="matematica">Matemática</option>
+            <option value="nocoes-informatica">Noções de Informática</option>
+          </select>
+          <select id="q-filter-nivel">
+            <option value="">Todos os níveis</option>
+            <option value="facil">Fácil</option>
+            <option value="medio">Médio</option>
+            <option value="dificil">Difícil</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" id="btn-filtrar-q">Filtrar</button>
+          <button class="btn btn-primary btn-sm" id="btn-nova-questao" style="margin-left:auto">+ Nova questão</button>
+        </div>
+        <div id="questions-list">
+          <div class="empty"><div class="empty-icon">⏳</div><p>Carregando...</p></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== MODAIS ===================== -->
+
+<!-- Modal: Novo/Editar Tópico -->
+<div class="modal-overlay" id="modal-topico">
+  <div class="modal">
+    <h2 id="modal-topico-title">Novo Tópico</h2>
+    <input type="hidden" id="topico-id">
+    <label>Disciplina</label>
+    <select id="topico-disc">
+      <option value="lingua-portuguesa">Língua Portuguesa</option>
+      <option value="matematica">Matemática</option>
+      <option value="nocoes-informatica">Noções de Informática</option>
+    </select>
+    <label>Título do tópico</label>
+    <input type="text" id="topico-titulo" placeholder="Ex: Interpretação de textos">
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-topico')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-salvar-topico">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novo/Editar Vídeo -->
+<div class="modal-overlay" id="modal-video">
+  <div class="modal">
+    <h2 id="modal-video-title">Adicionar Vídeo</h2>
+    <input type="hidden" id="video-id">
+    <label>URL do YouTube</label>
+    <input type="text" id="video-url" placeholder="https://www.youtube.com/watch?v=...">
+    <div id="video-url-preview" style="font-size:12px; color:var(--text3); margin-top:-10px; margin-bottom:14px;"></div>
+    <label>Título</label>
+    <input type="text" id="video-titulo" placeholder="Ex: Interpretação de Textos para Concursos">
+    <label>Canal</label>
+    <input type="text" id="video-canal" placeholder="Ex: YouTube">
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-video')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-salvar-video">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novo/Editar Aviso -->
+<div class="modal-overlay" id="modal-aviso">
+  <div class="modal">
+    <h2 id="modal-aviso-title">Novo Aviso</h2>
+    <input type="hidden" id="aviso-id">
+    <label>Título</label>
+    <input type="text" id="aviso-titulo" placeholder="Ex: Nova fase disponível!">
+    <label>Mensagem</label>
+    <textarea id="aviso-corpo" placeholder="Texto completo do aviso..."></textarea>
+    <label>Tipo</label>
+    <select id="aviso-tipo">
+      <option value="info">ℹ️ Informação</option>
+      <option value="aviso">⚠️ Aviso</option>
+      <option value="urgente">🚨 Urgente</option>
+    </select>
+    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; text-transform:none; letter-spacing:0;">
+      <input type="checkbox" id="aviso-fixado" style="width:auto; margin-bottom:0;">
+      <span style="font-size:13px; font-weight:500; color:var(--text);">Fixar no topo do painel</span>
+    </label>
+    <br>
+    <label>Data de expiração (opcional)</label>
+    <input type="datetime-local" id="aviso-expira">
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-aviso')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-salvar-aviso">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nova/Editar Questão -->
+<div class="modal-overlay" id="modal-questao">
+  <div class="modal" style="width:600px;">
+    <h2 id="modal-questao-title">Nova Questão</h2>
+    <input type="hidden" id="questao-id">
+    <div style="display:flex; gap:10px;">
+      <div style="flex:1;">
+        <label>Disciplina</label>
+        <select id="questao-disc">
+          <option value="lingua-portuguesa">Língua Portuguesa</option>
+          <option value="matematica">Matemática</option>
+          <option value="nocoes-informatica">Noções de Informática</option>
+        </select>
+      </div>
+      <div style="flex:1;">
+        <label>Nível</label>
+        <select id="questao-nivel">
+          <option value="facil">Fácil</option>
+          <option value="medio">Médio</option>
+          <option value="dificil">Difícil</option>
+        </select>
+      </div>
+    </div>
+    <label>Tópico</label>
+    <input type="text" id="questao-topico" placeholder="Ex: Interpretação de textos">
+    <label>Enunciado</label>
+    <textarea id="questao-enunciado" style="min-height:100px;" placeholder="Texto da questão..."></textarea>
+    <label>Alternativa A</label>
+    <input type="text" id="questao-a" placeholder="Alternativa A">
+    <label>Alternativa B</label>
+    <input type="text" id="questao-b" placeholder="Alternativa B">
+    <label>Alternativa C</label>
+    <input type="text" id="questao-c" placeholder="Alternativa C">
+    <label>Alternativa D</label>
+    <input type="text" id="questao-d" placeholder="Alternativa D">
+    <label>Gabarito</label>
+    <select id="questao-gabarito">
+      <option value="a">A</option>
+      <option value="b">B</option>
+      <option value="c">C</option>
+      <option value="d">D</option>
+    </select>
+    <label>Explicação (opcional)</label>
+    <textarea id="questao-explicacao" style="min-height:80px;" placeholder="Explicação do gabarito..."></textarea>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-questao')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-salvar-questao">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Pré-visualização de conteúdo -->
+<div class="modal-overlay" id="modal-preview">
+  <div class="modal" style="width:640px;">
+    <h2>Pré-visualização</h2>
+    <div id="preview-body" style="line-height:1.7; font-size:14px; color:var(--text2);"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-preview')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ============================================================
+// SUPABASE
+// ============================================================
+const { createClient } = supabase;
+const db = createClient(
+  'https://ixmaphwwtzmxnndqjtey.supabase.co',
+  'sb_publishable_K-bpqD1LsAcCSWopFeA6sg_1sRVA5oR'
+);
+
+const DISC_LABELS = {
+  'lingua-portuguesa': 'Língua Portuguesa',
+  'matematica': 'Matemática',
+  'nocoes-informatica': 'Noções de Informática'
+};
+
+// ============================================================
+// UTILITÁRIOS
+// ============================================================
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `show ${type}`;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = '', 2800);
+}
+
+function loading(on) {
+  const bar = document.getElementById('loading-bar');
+  bar.className = on ? 'loading-bar go' : 'loading-bar done';
+  if (!on) setTimeout(() => bar.className = 'loading-bar', 500);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function extractYoutubeId(url) {
+  const m = url.match(/(?:v=|embed\/|youtu\.be\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function ytThumb(id) { return `https://img.youtube.com/vi/${id}/mqdefault.jpg`; }
+function ytEmbed(id) { return `https://www.youtube.com/embed/${id}`; }
+
+function confirmDelete(msg, cb) {
+  if (confirm(msg)) cb();
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+let currentUser = null;
+let currentProfile = null;
+
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const err   = document.getElementById('login-err');
+  err.classList.remove('show');
+
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    err.textContent = 'E-mail ou senha inválidos.';
+    err.classList.add('show');
+  }
+});
+
+document.getElementById('login-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-login').click();
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => db.auth.signOut());
+
+db.auth.onAuthStateChange(async (event, session) => {
+  if (session) {
+    currentUser = session.user;
+    const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+    if (!profile?.is_admin) {
+      await db.auth.signOut();
+      alert('Acesso negado. Apenas administradores podem acessar este painel.');
+      return;
+    }
+    currentProfile = profile;
+    document.getElementById('header-name').textContent = profile.nome || currentUser.email;
+    document.getElementById('login-screen').classList.remove('active');
+    document.getElementById('app').classList.add('active');
+    initApp();
+  } else {
+    currentUser = null;
+    currentProfile = null;
+    document.getElementById('login-screen').classList.add('active');
+    document.getElementById('app').classList.remove('active');
+  }
+});
+
+// ============================================================
+// NAV
+// ============================================================
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('tab-' + item.dataset.tab).classList.add('active');
+    if (item.dataset.tab === 'aulas')    loadTopics();
+    if (item.dataset.tab === 'avisos')   loadAnnouncements();
+    if (item.dataset.tab === 'questoes') loadQuestions();
+  });
+});
+
+function initApp() {
+  loadTopics();
+  loadAnnouncements();
+  loadQuestions();
+  setupContentTab();
+  setupVideosTab();
+}
+
+// ============================================================
+// ABA: AULAS
+// ============================================================
+async function loadTopics() {
+  loading(true);
+  const { data: topics, error } = await db.from('topics').select('*').order('disciplina').order('ordem');
+  loading(false);
+  const container = document.getElementById('topics-list');
+
+  if (error || !topics?.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>Nenhum tópico encontrado. <a href="#" onclick="openModal('modal-topico')">Adicione o primeiro.</a></p></div>`;
+    return;
+  }
+
+  const byDisc = {};
+  topics.forEach(t => {
+    if (!byDisc[t.disciplina]) byDisc[t.disciplina] = [];
+    byDisc[t.disciplina].push(t);
+  });
+
+  container.innerHTML = Object.entries(byDisc).map(([disc, list]) => `
+    <div class="disc-group">
+      <div class="disc-group-title">${DISC_LABELS[disc] || disc}</div>
+      ${list.map((t, i) => `
+        <div class="topic-row" data-id="${t.id}">
+          <div class="topic-order-btns">
+            <button class="order-btn" onclick="moveTopicUp('${t.id}', '${disc}')" title="Subir">▲</button>
+            <button class="order-btn" onclick="moveTopicDown('${t.id}', '${disc}')" title="Descer">▼</button>
+          </div>
+          <span class="topic-name">${t.titulo}</span>
+          <div class="topic-actions">
+            <button class="toggle-active ${t.ativo ? 'on' : ''}" onclick="toggleTopicActive('${t.id}', ${t.ativo})" title="${t.ativo ? 'Desativar' : 'Ativar'}"></button>
+            <button class="btn btn-ghost btn-sm" onclick="editTopic(${JSON.stringify(t).replace(/"/g, '&quot;')})">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteTopic('${t.id}')">✕</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+document.getElementById('btn-novo-topico').addEventListener('click', () => {
+  document.getElementById('modal-topico-title').textContent = 'Novo Tópico';
+  document.getElementById('topico-id').value = '';
+  document.getElementById('topico-titulo').value = '';
+  openModal('modal-topico');
+});
+
+function editTopic(t) {
+  document.getElementById('modal-topico-title').textContent = 'Editar Tópico';
+  document.getElementById('topico-id').value = t.id;
+  document.getElementById('topico-disc').value = t.disciplina;
+  document.getElementById('topico-titulo').value = t.titulo;
+  openModal('modal-topico');
+}
+
+document.getElementById('btn-salvar-topico').addEventListener('click', async () => {
+  const id     = document.getElementById('topico-id').value;
+  const disc   = document.getElementById('topico-disc').value;
+  const titulo = document.getElementById('topico-titulo').value.trim();
+  if (!titulo) return toast('Informe o título do tópico.', 'error');
+
+  loading(true);
+  let err;
+  if (id) {
+    ({ error: err } = await db.from('topics').update({ disciplina: disc, titulo }).eq('id', id));
+  } else {
+    const { data: last } = await db.from('topics').select('ordem').eq('disciplina', disc).order('ordem', { ascending: false }).limit(1).single();
+    const nextOrdem = (last?.ordem ?? 0) + 1;
+    ({ error: err } = await db.from('topics').insert({ disciplina: disc, titulo, ordem: nextOrdem }));
+  }
+  loading(false);
+  if (err) return toast('Erro: ' + err.message, 'error');
+  closeModal('modal-topico');
+  toast(id ? 'Tópico atualizado!' : 'Tópico criado!');
+  loadTopics();
+});
+
+async function toggleTopicActive(id, current) {
+  const { error } = await db.from('topics').update({ ativo: !current }).eq('id', id);
+  if (error) return toast('Erro ao atualizar.', 'error');
+  loadTopics();
+}
+
+async function deleteTopic(id) {
+  confirmDelete('Excluir este tópico? Todo o conteúdo vinculado também será removido.', async () => {
+    loading(true);
+    const { error } = await db.from('topics').delete().eq('id', id);
+    loading(false);
+    if (error) return toast('Erro ao excluir.', 'error');
+    toast('Tópico removido.');
+    loadTopics();
+  });
+}
+
+async function moveTopicUp(id, disc) {
+  const { data: topics } = await db.from('topics').select('id,ordem').eq('disciplina', disc).order('ordem');
+  const idx = topics.findIndex(t => t.id === id);
+  if (idx <= 0) return;
+  await swapOrder(topics[idx], topics[idx - 1]);
+  loadTopics();
+}
+
+async function moveTopicDown(id, disc) {
+  const { data: topics } = await db.from('topics').select('id,ordem').eq('disciplina', disc).order('ordem');
+  const idx = topics.findIndex(t => t.id === id);
+  if (idx >= topics.length - 1) return;
+  await swapOrder(topics[idx], topics[idx + 1]);
+  loadTopics();
+}
+
+async function swapOrder(a, b) {
+  await db.from('topics').update({ ordem: b.ordem }).eq('id', a.id);
+  await db.from('topics').update({ ordem: a.ordem }).eq('id', b.id);
+}
+
+// ============================================================
+// ABA: CONTEÚDO
+// ============================================================
+let contentTopicId = null;
+
+function setupContentTab() {
+  document.getElementById('cont-disc').addEventListener('change', async function () {
+    const disc = this.value;
+    const topSel = document.getElementById('cont-topico');
+    topSel.innerHTML = '<option value="">Carregando...</option>';
+    topSel.disabled = true;
+    document.getElementById('cont-editor').style.display = 'none';
+    document.getElementById('cont-placeholder').style.display = 'block';
+
+    if (!disc) { topSel.innerHTML = '<option value="">Selecione a disciplina...</option>'; return; }
+
+    const { data } = await db.from('topics').select('id,titulo').eq('disciplina', disc).eq('ativo', true).order('ordem');
+    topSel.innerHTML = '<option value="">Selecione o tópico...</option>' +
+      (data || []).map(t => `<option value="${t.id}">${t.titulo}</option>`).join('');
+    topSel.disabled = false;
+  });
+
+  document.getElementById('cont-topico').addEventListener('change', async function () {
+    const id = this.value;
+    contentTopicId = id || null;
+    if (!id) {
+      document.getElementById('cont-editor').style.display = 'none';
+      document.getElementById('cont-placeholder').style.display = 'block';
+      return;
+    }
+    document.getElementById('cont-placeholder').style.display = 'none';
+    document.getElementById('cont-editor').style.display = 'block';
+
+    loading(true);
+    const { data } = await db.from('topic_content').select('*').eq('topic_id', id).single();
+    loading(false);
+
+    document.getElementById('cont-texto').innerHTML = data?.texto_html || '';
+    document.getElementById('cont-video-url').value = data?.video_url
+      ? `https://www.youtube.com/watch?v=${extractYoutubeId(data.video_url) || data.video_url}`
+      : '';
+    updateVideoPreview();
+  });
+
+  document.getElementById('cont-video-url').addEventListener('input', updateVideoPreview);
+  document.getElementById('btn-extrair-video').addEventListener('click', updateVideoPreview);
+
+  document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cmd = btn.dataset.cmd;
+      if (cmd === 'h3') {
+        document.execCommand('formatBlock', false, 'h3');
+      } else {
+        document.execCommand(cmd, false, null);
+      }
+      document.getElementById('cont-texto').focus();
+    });
+  });
+
+  document.getElementById('btn-salvar-conteudo').addEventListener('click', saveContent);
+  document.getElementById('btn-preview-conteudo').addEventListener('click', () => {
+    document.getElementById('preview-body').innerHTML = document.getElementById('cont-texto').innerHTML;
+    openModal('modal-preview');
+  });
+}
+
+function updateVideoPreview() {
+  const url = document.getElementById('cont-video-url').value.trim();
+  const prev = document.getElementById('cont-video-preview');
+  if (!url) { prev.textContent = ''; return; }
+  const id = extractYoutubeId(url);
+  prev.textContent = id ? `✅ ID: ${id} — embed: ${ytEmbed(id)}` : '⚠️ URL inválida';
+}
+
+async function saveContent() {
+  if (!contentTopicId) return;
+  const rawUrl = document.getElementById('cont-video-url').value.trim();
+  const ytId   = extractYoutubeId(rawUrl);
+  const embed  = ytId ? ytEmbed(ytId) : (rawUrl || null);
+  const html   = document.getElementById('cont-texto').innerHTML;
+
+  loading(true);
+  const { error } = await db.from('topic_content').upsert({
+    topic_id:   contentTopicId,
+    texto_html: html,
+    video_url:  embed,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'topic_id' });
+  loading(false);
+
+  if (error) return toast('Erro ao salvar: ' + error.message, 'error');
+  toast('Conteúdo salvo com sucesso!');
+}
+
+// ============================================================
+// ABA: VÍDEOS
+// ============================================================
+let currentVideoTopicId = null;
+
+function setupVideosTab() {
+  document.getElementById('vid-disc').addEventListener('change', async function () {
+    const disc = this.value;
+    const topSel = document.getElementById('vid-topico');
+    topSel.innerHTML = '<option value="">Carregando...</option>';
+    topSel.disabled = true;
+    document.getElementById('vid-section').style.display = 'none';
+    document.getElementById('vid-placeholder').style.display = 'block';
+
+    if (!disc) { topSel.innerHTML = '<option value="">Selecione a disciplina...</option>'; return; }
+
+    const { data } = await db.from('topics').select('id,titulo').eq('disciplina', disc).eq('ativo', true).order('ordem');
+    topSel.innerHTML = '<option value="">Selecione o tópico...</option>' +
+      (data || []).map(t => `<option value="${t.id}">${t.titulo}</option>`).join('');
+    topSel.disabled = false;
+  });
+
+  document.getElementById('vid-topico').addEventListener('change', async function () {
+    const id = this.value;
+    currentVideoTopicId = id || null;
+    if (!id) {
+      document.getElementById('vid-section').style.display = 'none';
+      document.getElementById('vid-placeholder').style.display = 'block';
+      return;
+    }
+    document.getElementById('vid-placeholder').style.display = 'none';
+    document.getElementById('vid-section').style.display = 'block';
+    loadVideos(id);
+  });
+
+  document.getElementById('btn-novo-video').addEventListener('click', () => {
+    document.getElementById('modal-video-title').textContent = 'Adicionar Vídeo';
+    document.getElementById('video-id').value = '';
+    document.getElementById('video-url').value = '';
+    document.getElementById('video-titulo').value = '';
+    document.getElementById('video-canal').value = 'YouTube';
+    document.getElementById('video-url-preview').textContent = '';
+    openModal('modal-video');
+  });
+
+  document.getElementById('video-url').addEventListener('input', function () {
+    const id = extractYoutubeId(this.value);
+    document.getElementById('video-url-preview').textContent = id
+      ? `✅ ID: ${id}` : (this.value ? '⚠️ URL inválida' : '');
+  });
+
+  document.getElementById('btn-salvar-video').addEventListener('click', saveVideo);
+}
+
+async function loadVideos(topicId) {
+  loading(true);
+  const { data, error } = await db.from('topic_videos').select('*').eq('topic_id', topicId).order('ordem');
+  loading(false);
+  const container = document.getElementById('videos-list');
+
+  if (!data?.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">🎬</div><p>Nenhum vídeo adicionado ainda.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = data.map(v => `
+    <div class="video-row" data-id="${v.id}">
+      <img class="video-thumb" src="${ytThumb(v.youtube_id)}" alt="${v.titulo}" loading="lazy">
+      <div class="video-info">
+        <div class="v-title">${v.titulo}</div>
+        <div class="v-canal">${v.canal || 'YouTube'}</div>
+      </div>
+      <div style="display:flex; gap:6px; flex-shrink:0;">
+        <button class="btn btn-ghost btn-sm" onclick="editVideo(${JSON.stringify(v).replace(/"/g, '&quot;')})">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteVideo('${v.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editVideo(v) {
+  document.getElementById('modal-video-title').textContent = 'Editar Vídeo';
+  document.getElementById('video-id').value = v.id;
+  document.getElementById('video-url').value = `https://www.youtube.com/watch?v=${v.youtube_id}`;
+  document.getElementById('video-titulo').value = v.titulo;
+  document.getElementById('video-canal').value = v.canal || 'YouTube';
+  document.getElementById('video-url-preview').textContent = `✅ ID: ${v.youtube_id}`;
+  openModal('modal-video');
+}
+
+async function saveVideo() {
+  const id     = document.getElementById('video-id').value;
+  const url    = document.getElementById('video-url').value.trim();
+  const titulo = document.getElementById('video-titulo').value.trim();
+  const canal  = document.getElementById('video-canal').value.trim();
+  const ytId   = extractYoutubeId(url);
+
+  if (!ytId)   return toast('URL do YouTube inválida.', 'error');
+  if (!titulo) return toast('Informe o título do vídeo.', 'error');
+  if (!currentVideoTopicId) return;
+
+  loading(true);
+  let err;
+  if (id) {
+    ({ error: err } = await db.from('topic_videos').update({ youtube_id: ytId, titulo, canal }).eq('id', id));
+  } else {
+    const { data: last } = await db.from('topic_videos').select('ordem').eq('topic_id', currentVideoTopicId).order('ordem', { ascending: false }).limit(1).single();
+    ({ error: err } = await db.from('topic_videos').insert({ topic_id: currentVideoTopicId, youtube_id: ytId, titulo, canal, ordem: (last?.ordem ?? 0) + 1 }));
+  }
+  loading(false);
+
+  if (err) return toast('Erro: ' + err.message, 'error');
+  closeModal('modal-video');
+  toast(id ? 'Vídeo atualizado!' : 'Vídeo adicionado!');
+  loadVideos(currentVideoTopicId);
+}
+
+async function deleteVideo(id) {
+  confirmDelete('Remover este vídeo?', async () => {
+    loading(true);
+    await db.from('topic_videos').delete().eq('id', id);
+    loading(false);
+    toast('Vídeo removido.');
+    if (currentVideoTopicId) loadVideos(currentVideoTopicId);
+  });
+}
+
+// ============================================================
+// ABA: AVISOS
+// ============================================================
+async function loadAnnouncements() {
+  loading(true);
+  const { data, error } = await db.from('announcements').select('*').order('fixado', { ascending: false }).order('created_at', { ascending: false });
+  loading(false);
+  const container = document.getElementById('announcements-list');
+
+  if (!data?.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📢</div><p>Nenhum aviso criado ainda.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = data.map(a => `
+    <div class="ann-row">
+      <span class="ann-tipo-badge tipo-${a.tipo}">${a.tipo}</span>
+      <div class="ann-body">
+        <div class="ann-titulo">${a.fixado ? '📌 ' : ''}${a.titulo}</div>
+        <div class="ann-corpo">${a.corpo}</div>
+        <div class="ann-meta">
+          ${a.ativo ? '✅ Ativo' : '⏸ Inativo'} &middot;
+          ${a.expira_em ? 'Expira: ' + new Date(a.expira_em).toLocaleString('pt-BR') : 'Sem expiração'}
+        </div>
+      </div>
+      <div style="display:flex; gap:6px; flex-shrink:0; flex-direction:column;">
+        <button class="btn btn-ghost btn-sm" onclick="editAviso(${JSON.stringify(a).replace(/"/g, '&quot;')})">Editar</button>
+        <button class="toggle-active ${a.ativo ? 'on' : ''} btn-sm" style="width:36px" onclick="toggleAviso('${a.id}', ${a.ativo})"></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAviso('${a.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('btn-novo-aviso').addEventListener('click', () => {
+  document.getElementById('modal-aviso-title').textContent = 'Novo Aviso';
+  document.getElementById('aviso-id').value = '';
+  document.getElementById('aviso-titulo').value = '';
+  document.getElementById('aviso-corpo').value = '';
+  document.getElementById('aviso-tipo').value = 'info';
+  document.getElementById('aviso-fixado').checked = false;
+  document.getElementById('aviso-expira').value = '';
+  openModal('modal-aviso');
+});
+
+function editAviso(a) {
+  document.getElementById('modal-aviso-title').textContent = 'Editar Aviso';
+  document.getElementById('aviso-id').value = a.id;
+  document.getElementById('aviso-titulo').value = a.titulo;
+  document.getElementById('aviso-corpo').value = a.corpo;
+  document.getElementById('aviso-tipo').value = a.tipo;
+  document.getElementById('aviso-fixado').checked = a.fixado;
+  document.getElementById('aviso-expira').value = a.expira_em ? a.expira_em.slice(0, 16) : '';
+  openModal('modal-aviso');
+}
+
+document.getElementById('btn-salvar-aviso').addEventListener('click', async () => {
+  const id     = document.getElementById('aviso-id').value;
+  const titulo = document.getElementById('aviso-titulo').value.trim();
+  const corpo  = document.getElementById('aviso-corpo').value.trim();
+  const tipo   = document.getElementById('aviso-tipo').value;
+  const fixado = document.getElementById('aviso-fixado').checked;
+  const expRaw = document.getElementById('aviso-expira').value;
+  const expira_em = expRaw ? new Date(expRaw).toISOString() : null;
+
+  if (!titulo) return toast('Informe o título do aviso.', 'error');
+  if (!corpo)  return toast('Informe o corpo do aviso.', 'error');
+
+  loading(true);
+  let err;
+  if (id) {
+    ({ error: err } = await db.from('announcements').update({ titulo, corpo, tipo, fixado, expira_em }).eq('id', id));
+  } else {
+    ({ error: err } = await db.from('announcements').insert({ titulo, corpo, tipo, fixado, expira_em, ativo: true }));
+  }
+  loading(false);
+
+  if (err) return toast('Erro: ' + err.message, 'error');
+  closeModal('modal-aviso');
+  toast(id ? 'Aviso atualizado!' : 'Aviso criado!');
+  loadAnnouncements();
+});
+
+async function toggleAviso(id, current) {
+  await db.from('announcements').update({ ativo: !current }).eq('id', id);
+  loadAnnouncements();
+}
+
+async function deleteAviso(id) {
+  confirmDelete('Excluir este aviso?', async () => {
+    loading(true);
+    await db.from('announcements').delete().eq('id', id);
+    loading(false);
+    toast('Aviso removido.');
+    loadAnnouncements();
+  });
+}
+
+// ============================================================
+// ABA: QUESTÕES
+// ============================================================
+async function loadQuestions() {
+  const disc  = document.getElementById('q-filter-disc').value;
+  const nivel = document.getElementById('q-filter-nivel').value;
+
+  let query = db.from('questions').select('id,disciplina,topico,enunciado,gabarito,nivel_dificuldade,ativo').order('created_at', { ascending: false }).limit(100);
+  if (disc)  query = query.eq('disciplina', disc);
+  if (nivel) query = query.eq('nivel_dificuldade', nivel);
+
+  loading(true);
+  const { data, error } = await query;
+  loading(false);
+
+  const container = document.getElementById('questions-list');
+  if (!data?.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">❓</div><p>Nenhuma questão encontrada.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = data.map(q => `
+    <div class="question-row" onclick="editQuestao('${q.id}')">
+      <div class="q-top">
+        <span class="q-disc">${DISC_LABELS[q.disciplina] || q.disciplina} · ${q.topico}</span>
+        <span class="q-nivel nivel-${q.nivel_dificuldade}">${q.nivel_dificuldade}</span>
+        ${!q.ativo ? '<span style="font-size:10px; color:var(--text3);">inativa</span>' : ''}
+      </div>
+      <div class="q-enunciado">${q.enunciado.substring(0, 160)}${q.enunciado.length > 160 ? '…' : ''}</div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('btn-filtrar-q').addEventListener('click', loadQuestions);
+document.getElementById('q-filter-disc').addEventListener('change', loadQuestions);
+document.getElementById('q-filter-nivel').addEventListener('change', loadQuestions);
+
+document.getElementById('btn-nova-questao').addEventListener('click', () => {
+  document.getElementById('modal-questao-title').textContent = 'Nova Questão';
+  document.getElementById('questao-id').value = '';
+  ['questao-enunciado','questao-a','questao-b','questao-c','questao-d','questao-explicacao','questao-topico'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('questao-disc').value = 'lingua-portuguesa';
+  document.getElementById('questao-nivel').value = 'medio';
+  document.getElementById('questao-gabarito').value = 'a';
+  openModal('modal-questao');
+});
+
+async function editQuestao(id) {
+  loading(true);
+  const { data: q } = await db.from('questions').select('*').eq('id', id).single();
+  loading(false);
+  if (!q) return;
+
+  document.getElementById('modal-questao-title').textContent = 'Editar Questão';
+  document.getElementById('questao-id').value      = q.id;
+  document.getElementById('questao-disc').value    = q.disciplina;
+  document.getElementById('questao-nivel').value   = q.nivel_dificuldade;
+  document.getElementById('questao-topico').value  = q.topico;
+  document.getElementById('questao-enunciado').value = q.enunciado;
+  document.getElementById('questao-a').value       = q.opcao_a;
+  document.getElementById('questao-b').value       = q.opcao_b;
+  document.getElementById('questao-c').value       = q.opcao_c;
+  document.getElementById('questao-d').value       = q.opcao_d;
+  document.getElementById('questao-gabarito').value = q.gabarito;
+  document.getElementById('questao-explicacao').value = q.explicacao || '';
+  openModal('modal-questao');
+}
+
+document.getElementById('btn-salvar-questao').addEventListener('click', async () => {
+  const id   = document.getElementById('questao-id').value;
+  const disc = document.getElementById('questao-disc').value;
+  const nivel= document.getElementById('questao-nivel').value;
+  const topico     = document.getElementById('questao-topico').value.trim();
+  const enunciado  = document.getElementById('questao-enunciado').value.trim();
+  const opcao_a    = document.getElementById('questao-a').value.trim();
+  const opcao_b    = document.getElementById('questao-b').value.trim();
+  const opcao_c    = document.getElementById('questao-c').value.trim();
+  const opcao_d    = document.getElementById('questao-d').value.trim();
+  const gabarito   = document.getElementById('questao-gabarito').value;
+  const explicacao = document.getElementById('questao-explicacao').value.trim();
+
+  if (!topico || !enunciado || !opcao_a || !opcao_b || !opcao_c || !opcao_d)
+    return toast('Preencha todos os campos obrigatórios.', 'error');
+
+  const payload = { disciplina: disc, topico, enunciado, opcao_a, opcao_b, opcao_c, opcao_d, gabarito, explicacao, nivel_dificuldade: nivel };
+
+  loading(true);
+  let err;
+  if (id) {
+    ({ error: err } = await db.from('questions').update(payload).eq('id', id));
+  } else {
+    ({ error: err } = await db.from('questions').insert(payload));
+  }
+  loading(false);
+
+  if (err) return toast('Erro: ' + err.message, 'error');
+  closeModal('modal-questao');
+  toast(id ? 'Questão atualizada!' : 'Questão criada!');
+  loadQuestions();
+});
+
+// fecha modal clicando no overlay
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>

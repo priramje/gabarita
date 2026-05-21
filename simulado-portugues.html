@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulado — Língua Portuguesa | COTEC</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1e40af;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .questao {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border-left: 5px solid #3b82f6;
+    }
+
+    .questao-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #3b82f6;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .enunciado {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+
+    .texto-base {
+      background: #f8fafc;
+      border-left: 3px solid #cbd5e1;
+      padding: 12px 16px;
+      margin: 12px 0 16px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #334155;
+      font-style: italic;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .opcoes {
+      list-style: none;
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .opcoes li label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .opcoes li label:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    .opcoes li input[type="radio"] {
+      margin-top: 3px;
+      accent-color: #3b82f6;
+      flex-shrink: 0;
+    }
+
+    .btn-verificar {
+      margin-top: 16px;
+      padding: 10px 22px;
+      background: #1e40af;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-verificar:hover { background: #1d4ed8; }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .feedback.acerto {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .feedback.erro {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    /* destaca a opção correta / errada após verificar */
+    .opcoes li label.correta {
+      border-color: #22c55e;
+      background: #f0fdf4;
+    }
+
+    .opcoes li label.errada {
+      border-color: #ef4444;
+      background: #fef2f2;
+    }
+
+    /* placar */
+    #placar {
+      display: none;
+      text-align: center;
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 24px;
+      margin-top: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    #placar h2 { font-size: 1.2rem; color: #1e40af; margin-bottom: 8px; }
+    #placar .nota { font-size: 2.5rem; font-weight: 800; color: #1e40af; }
+    #placar p { font-size: 0.9rem; color: #64748b; margin-top: 6px; }
+
+    .btn-reiniciar {
+      margin-top: 16px;
+      padding: 10px 22px;
+      background: #f1f5f9;
+      color: #1e40af;
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-reiniciar:hover { background: #eff6ff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Simulado · Língua Portuguesa</h1>
+  <p>Nível COTEC · Assistente Administrativo · 3 questões difíceis</p>
+</header>
+
+<!-- ─────────────── QUESTÃO 1 ─────────────── -->
+<div class="questao" id="q1">
+  <div class="questao-header">Questão 1 · Regência Verbal</div>
+  <p class="enunciado">
+    Assinale a alternativa em que o emprego da preposição está correto de acordo com a norma culta da língua portuguesa:
+  </p>
+  <ul class="opcoes">
+    <li>
+      <label>
+        <input type="radio" name="q1" value="A" />
+        A) O servidor aspirava o cargo de chefia há anos.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q1" value="B" />
+        B) O prefeito informou aos funcionários sobre a nova portaria.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q1" value="C" />
+        C) O diretor visou o documento antes de encaminhá-lo ao protocolo.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q1" value="D" />
+        D) A comissão preferia o projeto do que o relatório apresentado.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q1" value="E" />
+        E) Os cidadãos reclamavam o descaso da administração municipal.
+      </label>
+    </li>
+  </ul>
+  <button class="btn-verificar" onclick="verificar('q1','C')">Verificar</button>
+  <div class="feedback" id="fb-q1"></div>
+</div>
+
+<!-- ─────────────── QUESTÃO 2 ─────────────── -->
+<div class="questao" id="q2">
+  <div class="questao-header">Questão 2 · Emprego da Crase</div>
+  <p class="enunciado">
+    Assinale a alternativa em que o acento grave indicativo de crase está empregado corretamente:
+  </p>
+  <ul class="opcoes">
+    <li>
+      <label>
+        <input type="radio" name="q2" value="A" />
+        A) Entregue o requerimento à qualquer servidor do protocolo.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q2" value="B" />
+        B) A servidora referiu-se à várias irregularidades detectadas no processo.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q2" value="C" />
+        C) O expediente será encaminhado às dez horas da manhã.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q2" value="D" />
+        D) O ofício foi enviado à Brasília para análise do ministério.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q2" value="E" />
+        E) Ficamos à espera de uma decisão à respeito do concurso.
+      </label>
+    </li>
+  </ul>
+  <button class="btn-verificar" onclick="verificar('q2','C')">Verificar</button>
+  <div class="feedback" id="fb-q2"></div>
+</div>
+
+<!-- ─────────────── QUESTÃO 3 ─────────────── -->
+<div class="questao" id="q3">
+  <div class="questao-header">Questão 3 · Interpretação de Texto</div>
+  <p class="enunciado">Leia o texto e responda:</p>
+  <div class="texto-base">
+    "A eficiência da administração pública não se mede apenas pela quantidade de serviços prestados, mas, sobretudo, pela qualidade com que esses serviços atendem às reais necessidades da população. Um servidor comprometido compreende que sua função vai além do cumprimento burocrático de normas; ele é o elo entre o Estado e o cidadão, e sua postura ética e diligente é determinante para o fortalecimento da confiança institucional."
+  </div>
+  <p class="enunciado">
+    De acordo com o texto, a eficiência na administração pública é determinada principalmente por:
+  </p>
+  <ul class="opcoes">
+    <li>
+      <label>
+        <input type="radio" name="q3" value="A" />
+        A) O volume de normas cumpridas pelos servidores no exercício de suas funções.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q3" value="B" />
+        B) A quantidade de serviços oferecidos à população em determinado período.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q3" value="C" />
+        C) A qualidade dos serviços prestados aliada à postura ética dos servidores.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q3" value="D" />
+        D) O cumprimento burocrático dos regulamentos estabelecidos pelo Estado.
+      </label>
+    </li>
+    <li>
+      <label>
+        <input type="radio" name="q3" value="E" />
+        E) A relação direta entre Estado e cidadão, independentemente da qualidade dos serviços.
+      </label>
+    </li>
+  </ul>
+  <button class="btn-verificar" onclick="verificar('q3','C')">Verificar</button>
+  <div class="feedback" id="fb-q3"></div>
+</div>
+
+<!-- ─────────────── PLACAR ─────────────── -->
+<div id="placar">
+  <h2>Resultado Final</h2>
+  <div class="nota" id="nota-texto"></div>
+  <p id="nota-msg"></p>
+  <button class="btn-reiniciar" onclick="reiniciar()">Refazer simulado</button>
+</div>
+
+<script>
+  const gabaritos = {
+    q1: 'C',
+    q2: 'C',
+    q3: 'C'
+  };
+
+  const explicacoes = {
+    q1: {
+      C: `<strong>Correto!</strong> "Visar" no sentido de <em>autenticar / assinar</em> é verbo transitivo direto, portanto não exige preposição — "visou o documento" está correto.<br><br>
+          <strong>Por que as outras estão erradas?</strong><br>
+          <strong>A)</strong> "Aspirar" (= almejar) é transitivo indireto: <em>aspirava <u>ao</u> cargo</em>.<br>
+          <strong>B)</strong> "Informar" admite duas construções: <em>informar os funcionários <u>da</u> portaria</em> ou <em>informar a portaria <u>aos</u> funcionários</em> — não as duas juntas.<br>
+          <strong>D)</strong> "Preferir" não admite "do que": <em>preferia o projeto <u>ao</u> relatório</em>.<br>
+          <strong>E)</strong> "Reclamar" (= protestar) exige "de": <em>reclamavam <u>do</u> descaso</em>.`,
+      wrong: `<strong>Resposta errada.</strong> A alternativa correta é <strong>C</strong>.<br><br>
+          "Visar" no sentido de <em>autenticar / assinar</em> é verbo transitivo direto, portanto não exige preposição — "visou o documento" está correto.<br><br>
+          <strong>Por que as outras estão erradas?</strong><br>
+          <strong>A)</strong> "Aspirar" (= almejar) é transitivo indireto: <em>aspirava <u>ao</u> cargo</em>.<br>
+          <strong>B)</strong> "Informar" admite duas construções: <em>informar os funcionários <u>da</u> portaria</em> ou <em>informar a portaria <u>aos</u> funcionários</em> — não as duas juntas.<br>
+          <strong>D)</strong> "Preferir" não admite "do que": <em>preferia o projeto <u>ao</u> relatório</em>.<br>
+          <strong>E)</strong> "Reclamar" (= protestar) exige "de": <em>reclamavam <u>do</u> descaso</em>.`
+    },
+    q2: {
+      C: `<strong>Correto!</strong> Horas determinadas sempre exigem crase, pois há fusão da preposição <em>a</em> com o artigo definido <em>as</em>: <em>às dez horas</em> (a + as).<br><br>
+          <strong>Por que as outras estão erradas?</strong><br>
+          <strong>A)</strong> Não se usa crase antes de pronomes indefinidos: <em>a qualquer servidor</em>.<br>
+          <strong>B)</strong> A crase antes de palavra no plural deve ser <em>às</em>, não <em>à</em>: <em>às várias irregularidades</em>.<br>
+          <strong>D)</strong> Brasília não admite artigo definido, logo não há crase: <em>a Brasília</em>.<br>
+          <strong>E)</strong> "À espera" está correto, mas "à respeito" não — a locução prepositiva <em>a respeito de</em> não usa artigo, portanto não há crase: <em>a respeito</em>.`,
+      wrong: `<strong>Resposta errada.</strong> A alternativa correta é <strong>C</strong>.<br><br>
+          Horas determinadas sempre exigem crase, pois há fusão da preposição <em>a</em> com o artigo definido <em>as</em>: <em>às dez horas</em> (a + as).<br><br>
+          <strong>Por que as outras estão erradas?</strong><br>
+          <strong>A)</strong> Não se usa crase antes de pronomes indefinidos: <em>a qualquer servidor</em>.<br>
+          <strong>B)</strong> A crase antes de palavra no plural deve ser <em>às</em>, não <em>à</em>: <em>às várias irregularidades</em>.<br>
+          <strong>D)</strong> Brasília não admite artigo definido, logo não há crase: <em>a Brasília</em>.<br>
+          <strong>E)</strong> "À espera" está correto, mas "à respeito" não — a locução <em>a respeito de</em> não usa artigo.`
+    },
+    q3: {
+      C: `<strong>Correto!</strong> O texto afirma que a eficiência não se mede só pela <em>quantidade</em> de serviços, mas pela <em>qualidade</em>, e que a <em>postura ética e diligente</em> do servidor é "determinante para o fortalecimento da confiança institucional".<br><br>
+          <strong>Por que as outras estão erradas?</strong><br>
+          <strong>A e D)</strong> O texto critica o enfoque puramente burocrático, dizendo que o servidor vai "além do cumprimento burocrático de normas".<br>
+          <strong>B)</strong> A quantidade de serviços é explicitamente apontada como critério insuficiente.<br>
+          <strong>E)</strong> O texto não desvincula a relação Estado-cidadão da qualidade dos serviços; pelo contrário, as une.`,
+      wrong: `<strong>Resposta errada.</strong> A alternativa correta é <strong>C</strong>.<br><br>
+          O texto afirma que a eficiência não se mede só pela <em>quantidade</em> de serviços, mas pela <em>qualidade</em>, e que a <em>postura ética e diligente</em> do servidor é "determinante para o fortalecimento da confiança institucional".<br><br>
+          <strong>Por que as outras estão erradas?</strong><br>
+          <strong>A e D)</strong> O texto critica o enfoque puramente burocrático.<br>
+          <strong>B)</strong> A quantidade de serviços é explicitamente apontada como critério insuficiente.<br>
+          <strong>E)</strong> O texto não desvincula a relação Estado-cidadão da qualidade dos serviços.`
+    }
+  };
+
+  const respondidas = {};
+
+  function verificar(questaoId, gabarito) {
+    if (respondidas[questaoId]) return;
+
+    const selecionada = document.querySelector(`input[name="${questaoId}"]:checked`);
+    if (!selecionada) {
+      alert('Selecione uma alternativa antes de verificar.');
+      return;
+    }
+
+    const respostaUsuario = selecionada.value;
+    const acertou = respostaUsuario === gabarito;
+    respondidas[questaoId] = acertou;
+
+    const fb = document.getElementById(`fb-${questaoId}`);
+    fb.style.display = 'block';
+    fb.className = 'feedback ' + (acertou ? 'acerto' : 'erro');
+
+    const exp = explicacoes[questaoId];
+    fb.innerHTML = acertou ? exp[gabarito] : exp.wrong;
+
+    // destaca opções
+    const labels = document.querySelectorAll(`#${questaoId} .opcoes li label`);
+    labels.forEach(label => {
+      const radio = label.querySelector('input');
+      if (radio.value === gabarito) label.classList.add('correta');
+      else if (radio.value === respostaUsuario && !acertou) label.classList.add('errada');
+      radio.disabled = true;
+    });
+
+    // desabilita botão
+    document.querySelector(`#${questaoId} .btn-verificar`).disabled = true;
+    document.querySelector(`#${questaoId} .btn-verificar`).style.opacity = '0.5';
+
+    // mostra placar se todas foram respondidas
+    if (Object.keys(respondidas).length === 3) mostrarPlacar();
+  }
+
+  function mostrarPlacar() {
+    const acertos = Object.values(respondidas).filter(Boolean).length;
+    const placar = document.getElementById('placar');
+    placar.style.display = 'block';
+    document.getElementById('nota-texto').textContent = `${acertos} / 3`;
+
+    const msgs = [
+      'Continue estudando! Revise os gabaritos com atenção.',
+      'Quase lá! Revise os pontos que errou.',
+      'Muito bem! Apenas um deslize.',
+      'Excelente! Gabarito perfeito!'
+    ];
+    document.getElementById('nota-msg').textContent = msgs[acertos];
+
+    placar.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function reiniciar() {
+    Object.keys(respondidas).forEach(k => delete respondidas[k]);
+    ['q1','q2','q3'].forEach(id => {
+      document.querySelectorAll(`input[name="${id}"]`).forEach(r => {
+        r.checked = false;
+        r.disabled = false;
+      });
+      document.querySelectorAll(`#${id} .opcoes li label`).forEach(l => {
+        l.classList.remove('correta','errada');
+      });
+      const fb = document.getElementById(`fb-${id}`);
+      fb.style.display = 'none';
+      fb.className = 'feedback';
+      const btn = document.querySelector(`#${id} .btn-verificar`);
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    });
+    document.getElementById('placar').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
