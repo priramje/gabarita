@@ -68,6 +68,15 @@ create table if not exists public.user_achievements (
   unique (user_id, achievement_id)
 );
 
+create table if not exists public.user_lesson_completions (
+  id           uuid default gen_random_uuid() primary key,
+  user_id      uuid references public.profiles(id) on delete cascade not null,
+  disciplina   text not null,
+  topico       text not null,
+  completed_at timestamptz default now(),
+  unique (user_id, disciplina, topico)
+);
+
 
 -- =============================================================================
 -- ÍNDICES
@@ -132,11 +141,12 @@ create trigger trg_on_auth_user_created
 -- =============================================================================
 
 -- Habilitar RLS em todas as tabelas
-alter table public.profiles         enable row level security;
-alter table public.questions        enable row level security;
-alter table public.answers          enable row level security;
-alter table public.achievements     enable row level security;
-alter table public.user_achievements enable row level security;
+alter table public.profiles                  enable row level security;
+alter table public.questions                 enable row level security;
+alter table public.answers                   enable row level security;
+alter table public.achievements              enable row level security;
+alter table public.user_achievements         enable row level security;
+alter table public.user_lesson_completions   enable row level security;
 
 -- ----- profiles -----
 
@@ -234,6 +244,18 @@ create policy "user_achievements: leitura propria"
 drop policy if exists "user_achievements: insert proprio" on public.user_achievements;
 create policy "user_achievements: insert proprio"
   on public.user_achievements for insert
+  with check (auth.uid() = user_id);
+
+-- ----- user_lesson_completions -----
+
+drop policy if exists "lesson_completions: select proprio" on public.user_lesson_completions;
+create policy "lesson_completions: select proprio"
+  on public.user_lesson_completions for select
+  using (auth.uid() = user_id);
+
+drop policy if exists "lesson_completions: insert proprio" on public.user_lesson_completions;
+create policy "lesson_completions: insert proprio"
+  on public.user_lesson_completions for insert
   with check (auth.uid() = user_id);
 
 

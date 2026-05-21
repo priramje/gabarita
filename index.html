@@ -1459,6 +1459,29 @@ body {
   cursor: pointer;
 }
 
+.btn-mark-complete {
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 2px solid var(--green, #22c55e);
+  background: transparent;
+  color: var(--green, #22c55e);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.btn-mark-complete:hover {
+  background: var(--green, #22c55e);
+  color: #fff;
+}
+.btn-mark-complete.done {
+  background: var(--green, #22c55e);
+  color: #fff;
+  opacity: 0.85;
+  cursor: default;
+}
+
 .profile-info { flex: 1; }
 .profile-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
 .profile-email { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
@@ -2644,7 +2667,8 @@ body {
             <div class="discipline-topbar-title" id="lesson-page-title">Tópico</div>
             <div class="discipline-topbar-sub" id="lesson-page-sub">Estude a teoria e anote suas dúvidas ao lado</div>
           </div>
-          <div class="lesson-nav-buttons" style="display: flex; gap: 8px;">
+          <div class="lesson-nav-buttons" style="display: flex; gap: 8px; align-items: center;">
+            <button id="btn-mark-complete" class="btn-mark-complete" onclick="markLessonComplete()">✓ Marcar como concluída</button>
             <button id="btn-prev-lesson" class="btn-back" onclick="prevLesson()">← Anterior</button>
             <button id="btn-next-lesson" class="btn-back" onclick="nextLesson()">Próxima →</button>
           </div>
@@ -3033,6 +3057,7 @@ let state = {
   unlockedAchievements: new Set(),
   unlockedAchievementDates: {},
   answers: [],           // all user answers from DB
+  completedLessons: new Set(), // "disciplina|topico" strings
   currentPage: 'dashboard',
   currentDiscipline: null,
   currentTopic: null,
@@ -3352,14 +3377,17 @@ async function loadAll() {
       { data: answers },
       { data: achievements },
       { data: userAchievements },
+      { data: completions },
     ] = await Promise.all([
       db.from('answers').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
       db.from('achievements').select('*'),
       db.from('user_achievements').select('*').eq('user_id', uid),
+      db.from('user_lesson_completions').select('disciplina, topico').eq('user_id', uid),
     ]);
 
     state.answers      = answers || [];
     state.achievements = achievements || [];
+    state.completedLessons = new Set((completions || []).map(c => `${c.disciplina}|${c.topico}`));
 
     state.unlockedAchievements    = new Set();
     state.unlockedAchievementDates = {};
@@ -3403,12 +3431,14 @@ function computeStats() {
     perDisc[k] = { correct: discCorrect, total: discTotal, accuracy: discAccuracy };
   });
 
-  // Per-topic completion (topic is "done" if user has answered at least 1 correct in it)
+  // Per-topic completion: done if manually marked OR has a correct answer
   const doneTopics = {};
   Object.keys(DISCIPLINES).forEach(k => {
     const disc = DISCIPLINES[k];
     doneTopics[k] = disc.topicos.filter(t => {
-      return state.answers.some(a => a.disciplina === k && a.topico === t && a.acertou);
+      const tid = typeof t === 'object' ? t.id : t;
+      return state.completedLessons.has(`${k}|${tid}`) ||
+             state.answers.some(a => a.disciplina === k && a.topico === tid && a.acertou);
     }).length;
   });
 
@@ -3609,10 +3639,11 @@ function renderDisciplinePage(discId) {
     const answered = state.answers.filter(a => a.disciplina === discId && a.topico === topicoId);
     const hasCorrect = answered.some(a => a.acertou);
     const hasAny     = answered.length > 0;
+    const manualDone = state.completedLessons.has(`${discId}|${topicoId}`);
 
     let statusClass = 'not-started';
     let statusLabel = 'Não iniciado';
-    if (hasCorrect) { statusClass = 'completed'; statusLabel = 'Concluído'; }
+    if (manualDone || hasCorrect) { statusClass = 'completed'; statusLabel = 'Concluído'; }
     else if (hasAny) { statusClass = 'in-progress'; statusLabel = 'Em andamento'; }
 
     return `
@@ -3746,11 +3777,50 @@ async function openLesson(discId, topicIndex) {
   }
 
   switchLessonTab('theory');
+  renderLessonCompleteButton();
 
   document.getElementById('lesson-notes-area').value = 'Carregando anotações...';
   document.getElementById('lesson-notes-area').disabled = true;
   await loadNotes(discId, topicoId);
   document.getElementById('lesson-notes-area').disabled = false;
+}
+
+function renderLessonCompleteButton() {
+  const btn = document.getElementById('btn-mark-complete');
+  if (!btn) return;
+  const key = `${state.currentDiscipline}|${state.currentTopic}`;
+  const done = state.completedLessons.has(key);
+  if (done) {
+    btn.textContent = '✓ Aula concluída';
+    btn.classList.add('done');
+    btn.onclick = null;
+  } else {
+    btn.textContent = '✓ Marcar como concluída';
+    btn.classList.remove('done');
+    btn.onclick = markLessonComplete;
+  }
+}
+
+async function markLessonComplete() {
+  const disc = state.currentDiscipline;
+  const topic = state.currentTopic;
+  if (!disc || !topic || !state.userId) return;
+  const key = `${disc}|${topic}`;
+  if (state.completedLessons.has(key)) return;
+
+  const { error } = await db.from('user_lesson_completions').insert({
+    user_id: state.userId,
+    disciplina: disc,
+    topico: topic,
+  });
+  if (error && error.code !== '23505') { // 23505 = unique violation (já inserido)
+    console.error('Erro ao marcar aula:', error);
+    return;
+  }
+
+  state.completedLessons.add(key);
+  renderLessonCompleteButton();
+  renderHeader();
 }
 
 function switchLessonTab(tabId) {
