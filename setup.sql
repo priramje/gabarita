@@ -17,6 +17,7 @@ create table if not exists public.profiles (
   xp          integer default 0,
   nivel       integer default 1,
   is_admin    boolean default false,
+  avatar_url  text,
   created_at  timestamptz default now(),
   updated_at  timestamptz default now()
 );

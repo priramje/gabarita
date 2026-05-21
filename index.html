@@ -10,7 +10,7 @@
 /* ============================================================
    RESET & BASE
 ============================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
 
 :root {
   --bg:        #1A1F2E;
@@ -32,6 +32,7 @@
   --text2:     #94a3b8;
   --text3:     #64748b;
   --sidebar-w: 248px;
+  --sidebar-icon-w: 64px;
 }
 
 html { font-size: 14px; }
@@ -480,9 +481,118 @@ body {
   min-height: 100vh;
   transition: margin-left 0.3s ease;
 }
-#sidebar.collapsed + #main {
+#sidebar.collapsed ~ #main {
   margin-left: 0;
 }
+
+/* ============================================================
+   SIDEBAR — ICON-ONLY MODE (Desktop Collapse)
+============================================================ */
+.sidebar-collapse-wrap {
+  padding: 8px 12px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-collapse-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: rgba(59,130,246,0.07);
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: 8px;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.sidebar-collapse-btn:hover {
+  background: rgba(59,130,246,0.15);
+  color: var(--blue2);
+  border-color: rgba(59,130,246,0.3);
+}
+
+.sidebar-collapse-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+#sidebar.icon-only { width: var(--sidebar-icon-w); }
+
+#sidebar.icon-only .sidebar-logo {
+  padding: 18px 0;
+  justify-content: center;
+}
+
+#sidebar.icon-only .sidebar-logo > div:not(.sidebar-logo-icon) { display: none; }
+#sidebar.icon-only .sidebar-section-label { display: none; }
+#sidebar.icon-only .sidebar-progress { display: none; }
+#sidebar.icon-only .nav-item-badge { display: none; }
+
+#sidebar.icon-only .nav-item {
+  padding: 13px 0;
+  justify-content: center;
+  gap: 0;
+  border-left-width: 3px;
+  position: relative;
+  overflow: visible;
+}
+
+#sidebar.icon-only .nav-item > span:not(.nav-icon) { display: none; }
+
+#sidebar.icon-only .sidebar-collapse-wrap {
+  padding: 10px 0 12px;
+  display: flex;
+  justify-content: center;
+}
+
+#sidebar.icon-only .sidebar-collapse-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+}
+
+#sidebar.icon-only .sidebar-collapse-btn > span { display: none; }
+
+#sidebar.icon-only .sidebar-collapse-btn svg { transform: rotate(180deg); }
+
+/* Tooltip no hover em modo icon-only */
+#sidebar.icon-only .nav-item::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+#sidebar.icon-only .nav-item:hover::after { opacity: 1; }
+
+#sidebar.icon-only ~ #main { margin-left: var(--sidebar-icon-w); }
+
+/* Collapsed (sala de aula) tem prioridade sobre icon-only */
+#sidebar.icon-only.collapsed { width: 0; overflow: hidden; }
+#sidebar.icon-only.collapsed ~ #main { margin-left: 0; }
 
 /* ============================================================
    HEADER
@@ -1256,6 +1366,26 @@ body {
   margin-bottom: 28px;
 }
 
+.profile-avatar-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.profile-avatar-wrap:hover .profile-avatar-overlay { opacity: 1; }
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
 .profile-avatar {
   width: 64px;
   height: 64px;
@@ -1265,8 +1395,68 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  flex-shrink: 0;
+  overflow: hidden;
   box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.profile-name-row .profile-name { margin-bottom: 0; }
+.profile-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.5;
+  padding: 2px 4px;
+  transition: opacity 0.15s;
+}
+.profile-edit-btn:hover { opacity: 1; }
+.profile-name-edit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.profile-name-input {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text1);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 5px 10px;
+  width: 160px;
+  outline: none;
+}
+.profile-name-input:focus { border-color: var(--blue2); }
+.profile-save-btn {
+  background: var(--blue2);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.profile-save-btn:hover { opacity: 0.85; }
+.profile-cancel-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .profile-info { flex: 1; }
@@ -1566,51 +1756,475 @@ body {
 
 .empty-state { text-align: center; padding: 32px; color: var(--text3); font-size: 13px; }
 .empty-state-icon { font-size: 32px; margin-bottom: 8px; }
-    /* Lesson Page Layout */
-    .lesson-layout { display: flex; gap: 1.5rem; height: calc(100vh - 160px); }
-    .lesson-left-col { flex: 7; overflow-y: auto; padding-right: 1rem; }
-    .lesson-right-col { flex: 3; display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .lesson-tabs { display: flex; gap: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-    .lesson-tab { background: none; border: none; padding: 1rem 0; margin-right: 1.5rem; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500; font-size: 1.05rem; transition: all 0.2s; }
-    .lesson-tab:hover { color: var(--text); }
-    .lesson-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    /* ============================================================
+       LESSON PAGE LAYOUT
+    ============================================================ */
+    .lesson-layout {
+      display: flex;
+      gap: 1.5rem;
+      min-height: calc(100vh - 220px);
+    }
+    .lesson-left-col {
+      flex: 7;
+      min-width: 0;
+      overflow-y: auto;
+    }
+    .lesson-right-col {
+      flex: 3;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      height: calc(100vh - 220px);
+      position: sticky;
+      top: 76px;
+    }
+    .lesson-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg2);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+    .lesson-tab {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 14px 12px;
+      color: var(--text3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.2s;
+      text-align: center;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .lesson-tab:hover { color: var(--text2); }
+    .lesson-tab.active {
+      color: var(--blue2);
+      border-bottom-color: var(--blue);
+      background: rgba(59,130,246,0.06);
+    }
     .lesson-tab-content { display: none; padding-bottom: 2rem; }
-    .lesson-tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-    
-    .lesson-video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; margin-bottom: 1.5rem; background: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .lesson-video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-    .lesson-text-content { line-height: 1.8; color: var(--text-light); font-size: 1.05rem; }
-    .lesson-text-content h3 { color: var(--text); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .lesson-tab-content.active {
+      display: block;
+      animation: lessonFadeIn 0.25s ease;
+    }
+    @keyframes lessonFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .lesson-video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      background: #000;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+    .lesson-video-container iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    .lesson-text-content {
+      line-height: 1.85;
+      color: var(--text2);
+      font-size: 14px;
+      padding-top: 0.25rem;
+    }
+    .lesson-text-content h3 {
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
     .lesson-text-content p { margin-bottom: 1rem; }
-    
-    .notes-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); font-weight: 600; color: var(--text); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.1); }
-    .notes-textarea { flex: 1; width: 100%; background: transparent; color: var(--text-light); border: none; padding: 1.5rem; font-family: inherit; font-size: 1rem; resize: none; margin-bottom: 0; line-height: 1.6; }
+    .lesson-text-content ul { padding-left: 1.5rem; margin-bottom: 1rem; }
+    .lesson-text-content li { margin-bottom: 0.35rem; }
+    .lesson-text-content strong { color: var(--text); }
+
+    .notes-header {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg3);
+      flex-shrink: 0;
+    }
+    .notes-textarea {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      padding: 14px 16px;
+      font-family: inherit;
+      font-size: 13px;
+      resize: none;
+      line-height: 1.75;
+    }
     .notes-textarea:focus { outline: none; }
-    
-    .suggested-videos { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-    .suggested-videos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-    .suggested-video-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; display: block; text-decoration: none; }
-    .suggested-video-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    .suggested-video-thumb { width: 100%; height: 120px; background-size: cover; background-position: center; border-bottom: 1px solid var(--border); }
-    .suggested-video-info { padding: 0.8rem; }
-    .suggested-video-title { font-weight: 500; font-size: 0.85rem; line-height: 1.3; color: var(--text); margin-bottom: 0.3rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .suggested-video-channel { font-size: 0.75rem; color: var(--text-muted); }
-    
+    .notes-textarea::placeholder { color: var(--text3); line-height: 1.6; }
+
+    .suggested-videos {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .suggested-videos h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .suggested-videos p  { font-size: 12px; color: var(--text3); margin-bottom: 14px; }
+    .suggested-videos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .suggested-video-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: block;
+      text-decoration: none;
+    }
+    .suggested-video-card:hover {
+      border-color: var(--blue);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+    .suggested-video-thumb {
+      width: 100%;
+      height: 100px;
+      background-size: cover;
+      background-position: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .suggested-video-info { padding: 10px 12px; }
+    .suggested-video-title {
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .suggested-video-channel { font-size: 11px; color: var(--text3); }
+
+    /* Lesson nav buttons */
+    .lesson-nav-buttons { display: flex; gap: 6px; flex-shrink: 0; }
+    .lesson-nav-buttons .btn-back { padding: 7px 14px; font-size: 12px; }
+
     /* Phase Map */
     .phase-map-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
     .phase-map-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
-    .phase-map-grid { display: flex; flex-direction: column; gap: 16px; }
-    .phase-card { display: flex; align-items: center; gap: 16px; padding: 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; transition: all 0.2s; }
+    .phase-map-grid { display: flex; flex-direction: column; gap: 14px; }
+    .phase-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
     .phase-card.unlocked { border-color: rgba(59,130,246,0.3); }
     .phase-card.locked { opacity: 0.6; filter: grayscale(1); }
-    .phase-card.unlocked:hover { border-color: var(--primary); transform: translateY(-2px); }
-    .phase-icon { font-size: 32px; }
-    .phase-info { flex: 1; }
-    .phase-name { font-size: 16px; font-weight: 700; color: var(--text); }
-    .phase-desc { font-size: 12px; color: var(--text2); margin-top: 4px; }
-    .btn-play-phase { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-    .btn-play-phase:hover { background: var(--blue); }
-    .phase-lock-msg { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+    .phase-card.unlocked:hover {
+      border-color: var(--blue);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .phase-icon { font-size: 30px; flex-shrink: 0; }
+    .phase-info { flex: 1; min-width: 0; }
+    .phase-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .phase-desc { font-size: 12px; color: var(--text2); margin-top: 3px; }
+    .btn-play-phase {
+      background: var(--blue3);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+    .btn-play-phase:hover { background: var(--blue2); }
+    .phase-lock-msg { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ============================================================
+       TOGGLE BUTTON (MOBILE HEADER)
+    ============================================================ */
+    .sidebar-toggle-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .sidebar-toggle-btn:hover { background: var(--border); }
+    .sidebar-toggle-btn svg { width: 22px; height: 22px; }
+
+    /* Backdrop Mobile */
+    #sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,15,30,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 95;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+      pointer-events: none;
+    }
+    #sidebar-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #sidebar { overflow-x: hidden; }
+
+    /* ============================================================
+       TABLET (769px – 1100px)
+    ============================================================ */
+    @media (max-width: 1100px) and (min-width: 769px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .achievements-grid { grid-template-columns: repeat(3, 1fr); }
+      .disciplines-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ============================================================
+       MOBILE (≤ 768px)
+    ============================================================ */
+    @media (max-width: 768px) {
+      /* Sidebar: icon-only por padrão no mobile */
+      #sidebar { width: 62px; }
+      #sidebar.collapsed { width: 0 !important; border-right: none !important; overflow: hidden !important; }
+
+      /* Estado icon-only (default mobile) */
+      #sidebar:not(.mobile-expanded) .sidebar-logo { padding: 18px 0; justify-content: center; }
+      #sidebar:not(.mobile-expanded) .sidebar-logo > div:not(.sidebar-logo-icon),
+      #sidebar:not(.mobile-expanded) .sidebar-section-label,
+      #sidebar:not(.mobile-expanded) .nav-item-badge,
+      #sidebar:not(.mobile-expanded) .sidebar-progress,
+      #sidebar:not(.mobile-expanded) .sidebar-collapse-wrap { display: none !important; }
+      #sidebar:not(.mobile-expanded) .nav-item {
+        padding: 13px 0;
+        justify-content: center;
+        gap: 0;
+        border-left-width: 3px;
+        position: relative;
+        overflow: visible;
+      }
+      #sidebar:not(.mobile-expanded) .nav-item > span:not(.nav-icon) { display: none !important; }
+
+      /* Tooltip no mobile */
+      #sidebar:not(.mobile-expanded):not(.collapsed) .nav-item::after {
+        content: attr(data-label);
+        position: absolute;
+        left: calc(100% + 8px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--bg2);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s;
+        z-index: 200;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      }
+      #sidebar:not(.mobile-expanded):not(.collapsed) .nav-item:hover::after { opacity: 1; }
+
+      /* Sidebar expandido (overlay completo) */
+      #sidebar.mobile-expanded {
+        width: 260px !important;
+        overflow-y: auto;
+        box-shadow: 8px 0 32px rgba(0,0,0,0.5);
+      }
+      #sidebar.mobile-expanded .sidebar-logo { padding: 22px 20px 18px; justify-content: flex-start; }
+      #sidebar.mobile-expanded .sidebar-logo > div:not(.sidebar-logo-icon) { display: block !important; }
+      #sidebar.mobile-expanded .sidebar-section-label { display: block !important; }
+      #sidebar.mobile-expanded .sidebar-progress { display: block !important; }
+      #sidebar.mobile-expanded .sidebar-collapse-wrap { display: none !important; }
+      #sidebar.mobile-expanded .nav-item { padding: 11px 20px; justify-content: flex-start; gap: 10px; }
+      #sidebar.mobile-expanded .nav-item > span:not(.nav-icon) { display: inline !important; }
+      #sidebar.mobile-expanded .nav-item-badge { display: inline-block !important; }
+
+      /* Main content offset */
+      #main { margin-left: 62px; }
+      #sidebar.collapsed ~ #main { margin-left: 0 !important; }
+
+      /* Botão desktop collapse: oculto no mobile */
+      .sidebar-collapse-wrap,
+      .sidebar-collapse-btn { display: none !important; }
+
+      /* Toggle button do header: visível no mobile */
+      .sidebar-toggle-btn { display: flex; }
+
+      /* --- Header --- */
+      #header { padding: 10px 14px; gap: 10px; }
+      .header-xp-section { display: none; }
+      .header-name { font-size: 13px; }
+      .header-level { font-size: 10px; }
+      .header-stat { padding: 6px 10px; gap: 4px; }
+      .header-stat-icon { font-size: 13px; }
+      .header-stat-val { font-size: 13px; }
+      .btn-logout { padding: 6px 10px; font-size: 11px; gap: 4px; }
+
+      /* --- Conteúdo --- */
+      #content { padding: 14px 12px; }
+
+      /* Welcome card */
+      .welcome-card { padding: 18px 16px; margin-bottom: 16px; }
+      .welcome-title { font-size: 17px; }
+      .welcome-sub { font-size: 12px; }
+
+      /* Stats */
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+      .stat-card { padding: 14px; }
+      .stat-card-val { font-size: 20px; }
+      .stat-card-icon { font-size: 20px; }
+
+      /* Disciplines */
+      .disciplines-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+      .discipline-card { padding: 18px; }
+
+      /* Two-col + Perf */
+      .two-col { grid-template-columns: 1fr; gap: 14px; }
+      .perf-grid { grid-template-columns: 1fr; gap: 10px; }
+
+      /* Achievements */
+      .achievements-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+      /* Discipline page */
+      .discipline-topbar { flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+      .discipline-topbar-title { font-size: 16px; }
+      .discipline-topbar-sub { font-size: 11px; }
+
+      /* Topics */
+      .topic-item { padding: 12px 14px; gap: 12px; }
+      .topic-title { font-size: 13px; }
+      .topic-meta { font-size: 10px; }
+
+      /* --- Lesson topbar no mobile --- */
+      #page-lesson .discipline-topbar { flex-wrap: wrap; row-gap: 8px; }
+      #page-lesson .discipline-topbar-info { flex: 1; min-width: 120px; }
+      #page-lesson .discipline-topbar-sub { display: none; }
+      .lesson-nav-buttons { order: 3; width: 100%; justify-content: space-between; }
+      .lesson-nav-buttons .btn-back {
+        flex: 1;
+        justify-content: center;
+        text-align: center;
+        font-size: 12px;
+        padding: 8px 10px;
+      }
+
+      /* Lesson layout: empilhado */
+      .lesson-layout { flex-direction: column; min-height: auto; gap: 1rem; }
+      .lesson-left-col { overflow-y: visible; }
+      .lesson-right-col { height: auto; min-height: 380px; min-width: 0; position: static; }
+      .lesson-tab { font-size: 12px; padding: 12px 8px; }
+      .lesson-video-container { border-radius: 8px; margin-bottom: 1rem; }
+      /* Vídeos sugeridos: 2 colunas menores no mobile */
+      .suggested-videos-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .suggested-video-thumb { height: 72px; }
+      .suggested-video-info { padding: 8px 10px; }
+      .suggested-video-title { font-size: 11px; }
+
+      /* Exercises */
+      .question-card { padding: 16px; }
+      .question-enunciado { font-size: 14px; }
+      .option-btn { padding: 10px 12px; gap: 10px; }
+      .phase-card { padding: 14px 16px; gap: 12px; }
+
+      /* Profile */
+      .profile-header { flex-wrap: wrap; padding: 18px; gap: 12px; }
+      .profile-tokens {
+        border-left: none;
+        border-top: 1px solid var(--border);
+        width: 100%;
+        padding: 12px 0 0;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .profile-name { font-size: 18px; }
+
+      /* Session complete */
+      .session-score-grid { gap: 20px; }
+      .session-complete { padding: 28px 16px; }
+
+      /* Toast */
+      #toast-container { left: 10px; right: 10px; bottom: 14px; }
+      .toast { max-width: 100%; }
+    }
+
+    /* ============================================================
+       CELULARES PEQUENOS (≤ 480px)
+    ============================================================ */
+    @media (max-width: 480px) {
+      #sidebar { width: 54px; }
+      #main { margin-left: 54px; }
+      #sidebar.collapsed ~ #main { margin-left: 0 !important; }
+
+      .stat-card-val { font-size: 18px; }
+      .stat-card-icon { font-size: 18px; }
+      .stats-grid { gap: 8px; }
+      .discipline-card { padding: 14px; }
+      .discipline-card-icon { width: 40px; height: 40px; font-size: 20px; margin-bottom: 10px; }
+      .discipline-card-title { font-size: 14px; }
+
+      .achievements-grid { gap: 8px; }
+      .achievement-card { padding: 14px 10px; }
+      .achievement-icon { font-size: 22px; }
+      .achievement-name { font-size: 11px; }
+      .achievement-desc { font-size: 10px; }
+
+      .section-card { padding: 14px; }
+      .page-title { font-size: 18px; }
+      .page-subtitle { font-size: 12px; margin-bottom: 18px; }
+
+      .lesson-right-col { min-height: 300px; }
+      .phase-map-title { font-size: 17px; }
+    }
 </style>
 </head>
 <body>
@@ -1828,31 +2442,31 @@ body {
 
     <nav class="sidebar-nav">
       <div class="sidebar-section-label">Geral</div>
-      <div class="nav-item active" onclick="navigate('dashboard')">
+      <div class="nav-item active" onclick="navigate('dashboard')" data-label="Dashboard">
         <span class="nav-icon">🏠</span>
         <span>Dashboard</span>
       </div>
 
       <div class="sidebar-section-label">Disciplinas</div>
-      <div class="nav-item" onclick="openDiscipline('lingua-portuguesa')">
+      <div class="nav-item" onclick="openDiscipline('lingua-portuguesa')" data-label="Língua Portuguesa">
         <span class="nav-icon">📖</span>
         <span>Língua Portuguesa</span>
       </div>
-      <div class="nav-item" onclick="openDiscipline('matematica')">
+      <div class="nav-item" onclick="openDiscipline('matematica')" data-label="Matemática">
         <span class="nav-icon">📐</span>
         <span>Matemática</span>
       </div>
-      <div class="nav-item" onclick="openDiscipline('nocoes-informatica')">
+      <div class="nav-item" onclick="openDiscipline('nocoes-informatica')" data-label="Informática">
         <span class="nav-icon">💻</span>
         <span>Noções de Informática</span>
       </div>
 
       <div class="sidebar-section-label">Conta</div>
-      <div class="nav-item" onclick="navigate('achievements')">
+      <div class="nav-item" onclick="navigate('achievements')" data-label="Conquistas">
         <span class="nav-icon">🏆</span>
         <span>Conquistas</span>
       </div>
-      <div class="nav-item" onclick="navigate('profile')">
+      <div class="nav-item" onclick="navigate('profile')" data-label="Perfil">
         <span class="nav-icon">👤</span>
         <span>Perfil / Histórico</span>
       </div>
@@ -1865,13 +2479,33 @@ body {
       </div>
       <div class="sidebar-progress-pct" id="sidebar-prog-pct">0%</div>
     </div>
+
+    <div class="sidebar-collapse-wrap">
+      <button class="sidebar-collapse-btn" onclick="toggleDesktopSidebar()" title="Recolher menu">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+          <polyline points="20 18 14 12 20 6"></polyline>
+        </svg>
+        <span>Recolher menu</span>
+      </button>
+    </div>
   </aside>
+
+  <!-- BACKDROP FOR MOBILE SIDEBAR -->
+  <div id="sidebar-backdrop" onclick="toggleMobileSidebar()"></div>
 
   <!-- MAIN -->
   <div id="main">
 
     <!-- HEADER -->
     <header id="header">
+      <button id="sidebar-toggle" onclick="toggleMobileSidebar()" class="sidebar-toggle-btn" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
       <div class="header-greeting">
         <div class="header-name" id="header-name">Candidato</div>
         <div class="header-level" id="header-level">Iniciante</div>
@@ -2136,9 +2770,21 @@ body {
       <div class="page" id="page-profile">
 
         <div class="profile-header">
-          <div class="profile-avatar">👤</div>
+          <div class="profile-avatar-wrap" onclick="document.getElementById('avatar-file-input').click()" title="Trocar foto">
+            <div class="profile-avatar" id="profile-avatar-display">👤</div>
+            <div class="profile-avatar-overlay">📷</div>
+            <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+          </div>
           <div class="profile-info">
-            <div class="profile-name" id="profile-name">Candidato</div>
+            <div class="profile-name-row">
+              <div class="profile-name" id="profile-name">Candidato</div>
+              <button class="profile-edit-btn" onclick="startEditName()" id="profile-edit-btn" title="Editar nome">✏️</button>
+            </div>
+            <div class="profile-name-edit" id="profile-name-edit" style="display:none">
+              <input type="text" id="profile-name-input" class="profile-name-input" maxlength="40" placeholder="Seu nome">
+              <button class="profile-save-btn" onclick="saveProfileName()">Salvar</button>
+              <button class="profile-cancel-btn" onclick="cancelEditName()">✕</button>
+            </div>
             <div class="profile-email" id="profile-email">—</div>
             <div class="profile-level-badge">
               <span>Nível:</span>
@@ -2626,6 +3272,7 @@ async function doUpdatePassword() {
 function showApp() {
   document.getElementById('login-screen').classList.remove('active');
   document.getElementById('app').classList.add('active');
+  initSidebarState();
   loadAndInit();
 }
 
@@ -2820,6 +3467,8 @@ function navigate(page) {
   if (page === 'dashboard')    renderDashboard();
   if (page === 'achievements') renderAchievements();
   if (page === 'profile')      renderProfile();
+
+  closeMobileSidebar();
 }
 
 function openDiscipline(discId) {
@@ -2835,6 +3484,8 @@ function openDiscipline(discId) {
   if (navEl) navEl.classList.add('active');
 
   renderDisciplinePage(discId);
+
+  closeMobileSidebar();
 }
 
 // ============================================================
@@ -2984,7 +3635,16 @@ function renderDisciplinePage(discId) {
 // LESSON PAGE (SALA DE AULA)
 // ============================================================
 function backToDiscipline() {
-  document.getElementById('sidebar').classList.remove('collapsed');
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.remove('collapsed');
+  // Restaura icon-only no desktop se estava ativo
+  if (window.innerWidth > 768) {
+    try {
+      if (localStorage.getItem('sidebarIconOnly') === 'true') {
+        sidebar.classList.add('icon-only');
+      }
+    } catch(e) {}
+  }
   openDiscipline(state.currentDiscipline);
 }
 
@@ -3048,6 +3708,7 @@ async function openLesson(discId, topicIndex) {
   document.getElementById('page-lesson').classList.add('active');
   
   document.getElementById('sidebar').classList.add('collapsed');
+  closeMobileSidebar();
 
   document.getElementById('lesson-page-title').textContent = topicoNome;
   
@@ -3575,6 +4236,62 @@ function renderAchievements() {
 // ============================================================
 // RENDER PROFILE PAGE
 // ============================================================
+function renderProfileAvatar() {
+  const avatarEl = document.getElementById('profile-avatar-display');
+  if (!avatarEl) return;
+  const url = state.profile?.avatar_url;
+  if (url) {
+    avatarEl.innerHTML = `<img src="${url}" alt="avatar">`;
+  } else {
+    avatarEl.textContent = '👤';
+  }
+}
+
+async function handleAvatarUpload(input) {
+  const file = input.files[0];
+  if (!file || !state.session) return;
+  const userId = state.session.user.id;
+  const ext = file.name.split('.').pop();
+  const path = `${userId}/avatar.${ext}`;
+
+  const { error: upErr } = await db.storage.from('avatars').upload(path, file, { upsert: true });
+  if (upErr) { alert('Erro ao enviar foto. Tente novamente.'); return; }
+
+  const { data } = db.storage.from('avatars').getPublicUrl(path);
+  const publicUrl = data.publicUrl + '?t=' + Date.now();
+
+  await db.from('profiles').update({ avatar_url: publicUrl }).eq('id', userId);
+  state.profile = { ...state.profile, avatar_url: publicUrl };
+  renderProfileAvatar();
+  input.value = '';
+}
+
+function startEditName() {
+  const currentName = state.profile?.nome || '';
+  document.getElementById('profile-name-input').value = currentName;
+  document.getElementById('profile-name').parentElement.style.display = 'none';
+  document.getElementById('profile-name-edit').style.display = 'flex';
+  document.getElementById('profile-name-input').focus();
+}
+
+function cancelEditName() {
+  document.getElementById('profile-name-edit').style.display = 'none';
+  document.getElementById('profile-name').parentElement.style.display = 'flex';
+}
+
+async function saveProfileName() {
+  const newName = document.getElementById('profile-name-input').value.trim();
+  if (!newName || !state.session) return;
+
+  const { error } = await db.from('profiles').update({ nome: newName }).eq('id', state.session.user.id);
+  if (error) { alert('Erro ao salvar. Tente novamente.'); return; }
+
+  state.profile = { ...state.profile, nome: newName };
+  document.getElementById('profile-name').textContent = newName;
+  cancelEditName();
+  renderHeader();
+}
+
 function renderProfile() {
   const stats = computeStats();
   const level = getLevelInfo(stats.xp);
@@ -3585,6 +4302,7 @@ function renderProfile() {
   document.getElementById('profile-email').textContent  = email;
   document.getElementById('profile-level').textContent  = level.name;
   document.getElementById('profile-tokens').textContent = stats.tokens.toLocaleString();
+  renderProfileAvatar();
 
   // Per-discipline donuts
   Object.entries(DISCIPLINES).forEach(([key, disc]) => {
@@ -3703,6 +4421,49 @@ function launchConfetti() {
       document.body.appendChild(p);
       setTimeout(() => p.remove(), 2500);
     }, i * 20);
+  }
+}
+
+// ============================================================
+// MOBILE SIDEBAR CONTROLLER
+// ============================================================
+function toggleMobileSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('mobile-expanded');
+
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar.classList.contains('mobile-expanded')) {
+    backdrop.classList.add('active');
+  } else {
+    backdrop.classList.remove('active');
+  }
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar && sidebar.classList.contains('mobile-expanded')) {
+    sidebar.classList.remove('mobile-expanded');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (backdrop) backdrop.classList.remove('active');
+  }
+}
+
+// ============================================================
+// DESKTOP SIDEBAR COLLAPSE (ICON-ONLY)
+// ============================================================
+function toggleDesktopSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const isIconOnly = sidebar.classList.toggle('icon-only');
+  try { localStorage.setItem('sidebarIconOnly', isIconOnly); } catch(e) {}
+}
+
+function initSidebarState() {
+  if (window.innerWidth > 768) {
+    try {
+      if (localStorage.getItem('sidebarIconOnly') === 'true') {
+        document.getElementById('sidebar').classList.add('icon-only');
+      }
+    } catch(e) {}
   }
 }
 
