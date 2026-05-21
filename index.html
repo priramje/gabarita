@@ -4255,7 +4255,11 @@ async function handleAvatarUpload(input) {
   const path = `${userId}/avatar.${ext}`;
 
   const { error: upErr } = await db.storage.from('avatars').upload(path, file, { upsert: true });
-  if (upErr) { alert('Erro ao enviar foto. Tente novamente.'); return; }
+  if (upErr) {
+    console.error('Avatar upload error:', upErr);
+    alert('Erro ao enviar foto: ' + (upErr.message || JSON.stringify(upErr)));
+    return;
+  }
 
   const { data } = db.storage.from('avatars').getPublicUrl(path);
   const publicUrl = data.publicUrl + '?t=' + Date.now();
