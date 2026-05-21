@@ -967,6 +967,14 @@ body {
   background: var(--card2);
   transform: translateX(3px);
 }
+.topic-item.topic-done {
+  border-color: rgba(34,197,94,0.25);
+  background: rgba(34,197,94,0.04);
+}
+.topic-item.topic-done:hover {
+  border-color: rgba(34,197,94,0.45);
+  background: rgba(34,197,94,0.08);
+}
 
 .topic-number {
   width: 32px;
@@ -1009,6 +1017,36 @@ body {
 
 .topic-chevron { font-size: 16px; color: var(--text3); transition: transform 0.2s; }
 .topic-item:hover .topic-chevron { transform: translateX(3px); color: var(--blue2); }
+
+/* Barra de progresso da disciplina */
+.disc-progress-container {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.disc-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.disc-progress-label { font-size: 13px; color: var(--text2); font-weight: 600; }
+.disc-progress-pct   { font-size: 13px; color: var(--green); font-weight: 800; }
+.disc-progress-track {
+  height: 8px;
+  background: var(--bg3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.disc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  border-radius: 99px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
 
 /* ============================================================
    EXERCISE PAGE
@@ -2660,6 +2698,15 @@ body {
             <div class="discipline-topbar-sub" id="disc-page-sub">Selecione um tópico para praticar</div>
           </div>
         </div>
+        <div class="disc-progress-container" id="disc-progress-container">
+          <div class="disc-progress-header">
+            <span class="disc-progress-label" id="disc-progress-label">0 de 0 tópicos concluídos</span>
+            <span class="disc-progress-pct" id="disc-progress-pct">0%</span>
+          </div>
+          <div class="disc-progress-track">
+            <div class="disc-progress-fill" id="disc-progress-fill"></div>
+          </div>
+        </div>
         <div class="topics-list" id="topics-list"></div>
       </div>
 
@@ -3408,7 +3455,10 @@ async function loadAll() {
       .select('*')
       .eq('id', state.userId)
       .single();
-    if (freshProfile) state.profile = freshProfile;
+    if (freshProfile) {
+      console.log('[loadAll] avatar_url do banco:', freshProfile.avatar_url);
+      state.profile = freshProfile;
+    }
 
     return true;
   } catch (e) {
@@ -3631,10 +3681,13 @@ function renderDashboard() {
 // ============================================================
 function renderDisciplinePage(discId) {
   const disc  = DISCIPLINES[discId];
-  const stats = computeStats();
 
   document.getElementById('disc-page-title').textContent = `${disc.icon} ${disc.label}`;
   document.getElementById('disc-page-sub').textContent   = `${disc.topicos.length} tópicos — selecione um para praticar`;
+
+  // Progresso da disciplina
+  let doneCnt = 0;
+  const total = disc.topicos.length;
 
   const list = document.getElementById('topics-list');
   list.innerHTML = disc.topicos.map((topicoData, i) => {
@@ -3649,11 +3702,17 @@ function renderDisciplinePage(discId) {
 
     let statusClass = 'not-started';
     let statusLabel = 'Não iniciado';
-    if (manualDone || hasCorrect) { statusClass = 'completed'; statusLabel = 'Concluído'; }
-    else if (hasAny) { statusClass = 'in-progress'; statusLabel = 'Em andamento'; }
+    if (manualDone || hasCorrect) {
+      statusClass = 'completed';
+      statusLabel = '✓ Concluído';
+      doneCnt++;
+    } else if (hasAny) {
+      statusClass = 'in-progress';
+      statusLabel = 'Em andamento';
+    }
 
     return `
-      <div class="topic-item" onclick="openLesson('${discId}', ${i})">
+      <div class="topic-item${manualDone || hasCorrect ? ' topic-done' : ''}" onclick="openLesson('${discId}', ${i})">
         <div class="topic-number">${i + 1}</div>
         <div class="topic-info">
           <div class="topic-title">${topicoNome}</div>
@@ -3666,6 +3725,12 @@ function renderDisciplinePage(discId) {
       </div>
     `;
   }).join('');
+
+  // Atualiza barra de progresso
+  const pct = total > 0 ? Math.round((doneCnt / total) * 100) : 0;
+  document.getElementById('disc-progress-label').textContent = `${doneCnt} de ${total} tópicos concluídos`;
+  document.getElementById('disc-progress-pct').textContent   = pct + '%';
+  document.getElementById('disc-progress-fill').style.width  = pct + '%';
 }
 
 // ============================================================
@@ -3814,13 +3879,27 @@ async function markLessonComplete() {
   const key = `${disc}|${topic}`;
   if (state.completedLessons.has(key)) return;
 
+  const btn = document.getElementById('btn-mark-complete');
+  if (btn) {
+    btn.textContent = 'Salvando...';
+    btn.disabled = true;
+    btn.onclick = null;
+  }
+
   const { error } = await db.from('user_lesson_completions').insert({
     user_id: state.userId,
     disciplina: disc,
     topico: topic,
   });
-  if (error && error.code !== '23505') { // 23505 = unique violation (já inserido)
+
+  if (btn) btn.disabled = false;
+
+  if (error && error.code !== '23505') {
     console.error('Erro ao marcar aula:', error);
+    if (btn) {
+      btn.textContent = '✗ Erro ao salvar';
+      setTimeout(() => { btn.textContent = '✓ Marcar como concluída'; btn.onclick = markLessonComplete; }, 2500);
+    }
     return;
   }
 
@@ -4317,7 +4396,8 @@ function renderProfileAvatar() {
   if (!avatarEl) return;
   const url = state.profile?.avatar_url;
   if (url) {
-    avatarEl.innerHTML = `<img src="${url}" alt="avatar">`;
+    const busted = url.includes('?') ? url + '&cb=' + Date.now() : url + '?cb=' + Date.now();
+    avatarEl.innerHTML = `<img src="${busted}" alt="avatar">`;
   } else {
     avatarEl.textContent = '👤';
   }
@@ -4327,7 +4407,7 @@ async function handleAvatarUpload(input) {
   const file = input.files[0];
   if (!file || !state.session) return;
   const userId = state.session.user.id;
-  const ext = file.name.split('.').pop();
+  const ext = file.name.split('.').pop().toLowerCase();
   const path = `${userId}/avatar.${ext}`;
 
   const { error: upErr } = await db.storage.from('avatars').upload(path, file, { upsert: true });
@@ -4338,12 +4418,21 @@ async function handleAvatarUpload(input) {
   }
 
   const { data } = db.storage.from('avatars').getPublicUrl(path);
-  const publicUrl = data.publicUrl + '?t=' + Date.now();
+  const publicUrl = data.publicUrl;
+  console.log('[avatar] publicUrl gerada:', publicUrl);
 
-  await db.from('profiles').update({ avatar_url: publicUrl }).eq('id', userId);
+  const { data: updateData, error: dbErr } = await db.from('profiles').update({ avatar_url: publicUrl }).eq('id', userId).select('avatar_url').single();
+  if (dbErr) {
+    console.error('[avatar] Erro ao salvar no banco:', dbErr);
+    alert('Foto enviada, mas não foi possível salvar no perfil: ' + (dbErr.message || JSON.stringify(dbErr)));
+    return;
+  }
+  console.log('[avatar] Salvo no banco:', updateData?.avatar_url);
+
   state.profile = { ...state.profile, avatar_url: publicUrl };
   renderProfileAvatar();
   input.value = '';
+  showToast('Foto de perfil atualizada!', 'success');
 }
 
 function startEditName() {
